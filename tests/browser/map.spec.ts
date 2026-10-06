@@ -498,3 +498,20 @@ test("income overlay toggles completely and opacity remains adjustable after nav
   const audit = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
   expect(audit.violations).toEqual([]);
 });
+
+
+for (const viewport of [{width:390,height:844}, {width:360,height:640}, {width:740,height:390}]) {
+ test(`phone list tap shows map and details at ${viewport.width}×${viewport.height}`, async ({ page }) => {
+  await page.setViewportSize(viewport);
+  await ready(page);
+  await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill("12090312");
+  await page.getByRole("button", {name:"Census area 12090312, $50,800",exact:true}).click();
+  await expect(page.locator("#details .income-value")).toHaveText("$50,800");
+  await expect.poll(async () => {
+    const map = (await page.locator("#map").boundingBox())!;
+    const panel = (await page.locator("#selection-panel").boundingBox())!;
+    return map.y >= 0 && map.y + map.height <= panel.y;
+  }).toBe(true);
+  await expect(page.locator("#map")).toBeFocused();
+});
+}

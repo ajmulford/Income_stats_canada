@@ -278,6 +278,9 @@ function showSelectionPanel() {
   element("selection-panel").classList.add("has-selection");
   document.body.classList.add("has-selection");
   setDetailsExpanded(true);
+  // Opening the phone panel also changes the map height.
+  if (matchMedia("(max-width: 760px)").matches)
+    map.invalidateSize({ pan: false });
   requestAnimationFrame(revealFocusedControl);
 }
 function renderDetails(row: Area) {
@@ -329,7 +332,7 @@ function renderDetails(row: Area) {
   pieces.push(source);
   content.replaceChildren(...pieces);
 }
-async function selectArea(id: string, navigate: boolean) {
+async function selectArea(id: string, navigate: boolean, revealMap = false) {
   const row = rows.get(id);
   if (!row) return;
   const before = selected;
@@ -351,12 +354,21 @@ async function selectArea(id: string, navigate: boolean) {
     const layer = layers.get(id) as L.Polygon;
     layer.setStyle(style(id));
     if (map.hasLayer(layer)) layer.bringToFront();
-    if (navigate)
+    if (navigate) {
+      const phone = matchMedia("(max-width: 760px)").matches;
+      if (phone && revealMap) {
+        map.getContainer().focus({ preventScroll: true });
+        window.scrollBy({
+          top: map.getContainer().getBoundingClientRect().top - 8,
+          behavior: "instant",
+        });
+      }
       map.fitBounds(layer.getBounds(), {
         padding: [30, 30],
         maxZoom: 15,
         animate: false,
       });
+    }
   } catch (error) {
     console.error(error);
     status.textContent =
@@ -387,8 +399,9 @@ function renderList() {
       button.setAttribute("aria-label", text);
       button.append(label, income);
       if (row.caution) button.append(node("span", "Caution", "caution-badge"));
-      button.addEventListener("click", () => {
-        void selectArea(row.id, true);
+      button.addEventListener("click", (event) => {
+        // Pointer selection reveals the map; keyboard selection retains list focus.
+        void selectArea(row.id, true, event.detail > 0);
       });
       item.append(button);
       return item;

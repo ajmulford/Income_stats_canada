@@ -916,3 +916,9 @@ h1 {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+
+@media (max-width: 760px) {
+  body.has-selection .map-frame {
+    height: min(430px, calc(52dvh - 16px));
+  }
+}

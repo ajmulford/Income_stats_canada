@@ -98,3 +98,5 @@ A source quality flag applicable to a published income value that calls for caut
 - No verified alternate-name aliases are present in the reviewed place inventory. Typographical normalization supports case, accent, whitespace, and punctuation variations without inventing name equivalences.
 
 - Map presentation controls let residents hide/show the income overlay and choose colour opacity from 0–100% (default 45%). Hiding removes income polygons and their map click targets while retaining census-list selection, income details, and CSV access. The opacity setting is retained when toggling or navigating within the page; refresh restores the default. These controls change presentation only.
+
+- On phone layouts, tapping a census-list result reveals and focuses the map, fits the selected area, and keeps the full map above the expanded bottom details panel. Keyboard activation retains list focus. The earlier map fit alone did not scroll the document, so the map remained off screen; regression checks now assert map/panel viewport geometry at portrait and landscape sizes.
