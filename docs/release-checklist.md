@@ -77,3 +77,5 @@ If the hosted check or measurement fails, treat the launch as unverified and cor
 For a data update, review the source lock and income variable/geography first, rebuild and validate, update reviewed checksums deliberately, repeat the relevant resident/manual/performance checks, and release map and CSV together. Historical income never becomes a projected current-income value.
 
 For rollback, restore the last reviewed code/data configuration and regenerate its candidate. Reuse manual evidence only if its candidate fingerprint is identical; otherwise reverify. Run the gated release workflow again. The new deployment has its actual publication date and identifies the restored data release; no undocumented mixed map/CSV artifacts should be uploaded.
+
+For the subsequent Ctrl + scroll update, Alex confirmed the behaviour works and explicitly requested deployment. The release record retains the original Pixel/TalkBack evidence transparently and records that confirmation without claiming a new physical-device test. Fresh three-engine interaction tests cover wheel scrolling before/after Ctrl zoom. Mobile touch handlers and accessible list selection are unchanged.

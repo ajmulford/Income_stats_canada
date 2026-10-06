@@ -848,3 +848,22 @@ h1 {
     display: block;
   }
 }
+
+.map-scroll-hint {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 800;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: #fffdf5ed;
+  color: #153f38;
+  font-size: 11px;
+  pointer-events: none;
+}
+@media (hover: none) and (pointer: coarse) {
+  .map-scroll-hint {
+    display: none;
+  }
+}

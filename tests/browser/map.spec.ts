@@ -380,3 +380,38 @@ test("project-subdirectory hosting keeps assets, search, selection, and CSV with
     "/IncomeStatistics/data/hrm/income.csv",
   );
 });
+
+
+test("ordinary wheel scrolls the page while Ctrl + wheel zooms the map", async ({ page }) => {
+  await ready(page);
+  const map = page.locator("#map");
+  const zoomIn = page.getByRole("button", { name: "Zoom in", exact: true });
+  await expect(page.locator(".map-scroll-hint")).toBeVisible();
+  await map.hover();
+  const before = await page.evaluate(() => window.scrollY);
+  await page.mouse.wheel(0, 250);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before);
+  await map.hover();
+  await page.keyboard.down("Control");
+  try {
+    // Leaflet limits each wheel gesture to four levels; reach maximum zoom.
+    await page.mouse.wheel(0, -10000);
+    await page.waitForTimeout(150);
+    await page.mouse.wheel(0, -10000);
+    await expect(zoomIn).toHaveAttribute("aria-disabled", "true");
+  } finally {
+    await page.keyboard.up("Control");
+  }
+  const scrollBefore = await page.evaluate(() => window.scrollY);
+  await page.mouse.wheel(0, 250);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(scrollBefore);
+  await expect(zoomIn).toHaveAttribute("aria-disabled", "true");
+  await map.hover();
+  await page.keyboard.down("Control");
+  try {
+    await page.mouse.wheel(0, 200);
+    await expect(zoomIn).toHaveAttribute("aria-disabled", "false");
+  } finally {
+    await page.keyboard.up("Control");
+  }
+});

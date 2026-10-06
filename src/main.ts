@@ -47,10 +47,32 @@ const map = L.map("map", {
   minZoom: 8,
   maxZoom: 18,
   zoomControl: false,
+  scrollWheelZoom: false,
   zoomAnimation: false,
   fadeAnimation: false,
   markerZoomAnimation: false,
 }).setView([44.664, -63.589], 13);
+let wheelDelta = 0;
+let wheelTimer: ReturnType<typeof setTimeout> | undefined;
+map.getContainer().addEventListener(
+  "wheel",
+  (event) => {
+    if (!event.ctrlKey || event.deltaY === 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const unit = event.deltaMode === 1 ? 20 : event.deltaMode === 2 ? map.getSize().y : 1;
+    wheelDelta += event.deltaY * unit;
+    const position = map.mouseEventToContainerPoint(event);
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(() => {
+      const steps = Math.min(4, Math.ceil(Math.abs(wheelDelta) / 120));
+      const zoom = Math.max(8, Math.min(18, map.getZoom() - Math.sign(wheelDelta) * steps));
+      wheelDelta = 0;
+      map.setZoomAround(position, zoom);
+    }, 40);
+  },
+  { passive: false },
+);
 L.control.zoom({ position: "topleft" }).addTo(map);
 map.attributionControl.setPosition("topright");
 map.attributionControl.addAttribution(
