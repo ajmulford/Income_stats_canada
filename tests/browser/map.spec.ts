@@ -36,7 +36,7 @@ test("census areas show all verified contained place names and explain missing m
   await ready(page);
   await page.locator("#area-filter").fill(id);
   const row = page.locator(`#area-list button[data-area-id="${id}"]`);
-  const label = `Contains place locations: ${[...names].sort((a, b) => a.localeCompare(b, "en-CA")).join(", ")}`;
+  const label = `Near or part of: ${[...names].sort((a, b) => a.localeCompare(b, "en-CA")).join(", ")}`;
   await expect(row.locator(".area-place")).toHaveText(label);
   await expect(row).toHaveAccessibleName(new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   await row.click();
@@ -46,9 +46,34 @@ test("census areas show all verified contained place names and explain missing m
   const ids = await page.locator("#area-list button").evaluateAll(buttons => buttons.map(button => (button as HTMLElement).dataset.areaId!));
   const unnamed = ids.find(id => !namesByArea.has(id))!;
   const unnamedRow = page.locator(`#area-list button[data-area-id="${unnamed}"]`);
-  await expect(unnamedRow.locator(".area-place")).toHaveCount(0);
+  await expect(unnamedRow.locator(".area-place")).toContainText("Near or part of: ");
   await unnamedRow.click();
-  await expect(page.locator("#details .area-location")).toHaveText("No named place location is linked to this area in the reviewed source.");
+  await expect(page.locator("#details .area-location")).toContainText("Near or part of: ");
+  await expect(page.locator("#details")).toContainText("No named place location is linked within this area.");
+  await expect(page.locator("#details")).toContainText("The label does not establish community membership");
+});
+
+test("nearby labels cover unmatched areas without overriding verified place matches", async ({ page }) => {
+  await ready(page);
+  const index = await (await page.request.get("/data/hrm/index.json")).json();
+  const namedAreas = new Set(index.places.filter((p: {areas: string[]}) => p.areas.length === 1).flatMap((p: {areas: string[]}) => p.areas));
+  for (const row of index.rows) {
+    if (namedAreas.has(row.id)) {
+      expect(row.nearbyPlace).toBeUndefined();
+    } else {
+      expect(index.places.some((p: {id: string; name: string}) => p.id === row.nearbyPlace.id && p.name === row.nearbyPlace.name)).toBe(true);
+      expect(row.nearbyPlace.distanceKm).toBeGreaterThanOrEqual(0);
+      expect(Number.isFinite(row.nearbyPlace.distanceKm)).toBe(true);
+    }
+  }
+  const row = index.rows.find((r: {nearbyPlace?: unknown}) => r.nearbyPlace);
+  await page.locator("#area-filter").fill(row.id);
+  const button = page.locator(`#area-list button[data-area-id="${row.id}"]`);
+  const label = `Near or part of: ${row.nearbyPlace.name}`;
+  await expect(button.locator(".area-place")).toHaveText(label);
+  await expect(button.locator(".area-place")).not.toContainText("km");
+  await button.click();
+  await expect(page.locator("#details .area-location")).toHaveText(label);
 });
 
 test("real map click and accessible list select the same published area", async ({
@@ -77,13 +102,12 @@ test("real map click and accessible list select the same published area", async 
     .getByRole("searchbox", { name: "Filter census areas by identifier" })
     .fill("12090312");
   await page
-    .getByRole("button", { name: "Census area 12090312, $50,800", exact: true })
+    .getByRole("button", { name: "Census area 12090312, $50,800" })
     .click();
   await expect(page.locator("#details .income-value")).toHaveText("$50,800");
   await expect(
     page.getByRole("button", {
       name: "Census area 12090312, $50,800",
-      exact: true,
     }),
   ).toHaveAttribute("aria-pressed", "true");
 });
@@ -97,7 +121,6 @@ test("suppressed income remains unavailable and keyboard selection keeps focus",
     .fill("12090104");
   const button = page.getByRole("button", {
     name: "Census area 12090104, Income unavailable",
-    exact: true,
   });
   await button.focus();
   await page.keyboard.press("Enter");
@@ -217,7 +240,6 @@ test("phone layout and core accessibility checks pass before and after selection
   await page
     .getByRole("button", {
       name: "Census area 12090104, Income unavailable",
-      exact: true,
     })
     .click();
   audit = await new AxeBuilder({ page })
@@ -281,7 +303,6 @@ test("phone selection panel expands, collapses, reopens, and preserves list focu
     .fill("12090312");
   const area = page.getByRole("button", {
     name: "Census area 12090312, $50,800",
-    exact: true,
   });
   await area.focus();
   await page.keyboard.press("Enter");
@@ -401,7 +422,7 @@ test("project-subdirectory hosting keeps assets, search, selection, and CSV with
     .getByRole("searchbox", { name: "Filter census areas by identifier" })
     .fill("12090312");
   await page
-    .getByRole("button", { name: "Census area 12090312, $50,800", exact: true })
+    .getByRole("button", { name: "Census area 12090312, $50,800" })
     .click();
   await expect(page.locator("#details .income-value")).toHaveText("$50,800");
   const resolved = await page
@@ -514,7 +535,7 @@ test("income overlay toggles completely and opacity remains adjustable after nav
   await expect(page.locator("body")).toHaveAttribute("data-map-state", "ready");
   await expect.poll(ink).toBe(0);
   await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill("12090312");
-  await page.getByRole("button", {name:"Census area 12090312, $50,800",exact:true}).click();
+  await page.getByRole("button", {name:"Census area 12090312, $50,800"}).click();
   await expect(page.locator("#details .income-value")).toHaveText("$50,800");
   await expect.poll(ink).toBe(0);
   await toggle.check();
@@ -536,7 +557,7 @@ for (const viewport of [{width:390,height:844}, {width:360,height:640}, {width:7
   await page.setViewportSize(viewport);
   await ready(page);
   await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill("12090312");
-  await page.getByRole("button", {name:"Census area 12090312, $50,800",exact:true}).click();
+  await page.getByRole("button", {name:"Census area 12090312, $50,800"}).click();
   await expect(page.locator("#details .income-value")).toHaveText("$50,800");
   await expect.poll(async () => {
     const map = (await page.locator("#map").boundingBox())!;
@@ -567,7 +588,7 @@ test("desktop details stay open after resizing from collapsed mobile details", a
   await page.setViewportSize({width:390,height:844});
   await ready(page);
   await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill("12090312");
-  await page.getByRole("button", {name:"Census area 12090312, $50,800",exact:true}).click();
+  await page.getByRole("button", {name:"Census area 12090312, $50,800"}).click();
   await page.getByRole("button", {name:"Collapse details"}).click();
   await expect(page.locator("#details")).toBeHidden();
   await page.setViewportSize({width:1280,height:900});
@@ -623,7 +644,7 @@ test("phone sort control stays reachable above expanded details", async ({page})
   await page.setViewportSize({width:390,height:844});
   await ready(page);
   await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill("12090312");
-  await page.getByRole("button", {name:"Census area 12090312, $50,800",exact:true}).click();
+  await page.getByRole("button", {name:"Census area 12090312, $50,800"}).click();
   const sort = page.getByRole("combobox", {name:"Sort census areas"});
   await sort.focus();
   await expect.poll(async () => {

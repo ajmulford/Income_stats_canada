@@ -91,7 +91,9 @@ let index: Index;
 const placeNamesByArea = new Map<string, string[]>();
 function areaPlaceLabel(id: string): string {
   const names = placeNamesByArea.get(id);
-  return names?.length ? `Contains place locations: ${names.join(", ")}` : "";
+  if (names?.length) return `Near or part of: ${names.join(", ")}`;
+  const nearby = rows.get(id)?.nearbyPlace;
+  return nearby ? `Near or part of: ${nearby.name}` : "";
 }
 let rows: Map<string, Area>;
 let selected: string | null = null;
@@ -312,8 +314,10 @@ function renderDetails(row: Area) {
   const pieces: HTMLElement[] = [amount, measure, date];
   const placeLabel = areaPlaceLabel(row.id);
   pieces.push(node("p", placeLabel || "No named place location is linked to this area in the reviewed source.", "area-location"));
-  if (placeLabel)
+  if (placeNamesByArea.has(row.id))
     pieces.push(node("p", "These names identify points within the census area. They do not define its boundary or represent income for an entire community.", "small-note"));
+  else if (row.nearbyPlace)
+    pieces.push(node("p", "No named place location is linked within this area. This approximate label uses the nearest reviewed place point to the centre of the area's map bounds. That centre can fall outside an irregular area. The label does not establish community membership or community-wide income.", "small-note"));
   if (row.note)
     pieces.push(
       node(

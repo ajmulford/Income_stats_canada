@@ -9,6 +9,7 @@ export interface Area {
   caution: boolean;
   note: string;
   source: string;
+  nearbyPlace?: { id: string; name: string; distanceKm: number } | null;
 }
 export interface Place {
   id: string;

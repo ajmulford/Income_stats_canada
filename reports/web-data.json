@@ -3,7 +3,7 @@
   "available": 599,
   "source_geometry_bytes": 8280444,
   "all_geometry_gzip_bytes": 2544388,
-  "index_gzip_bytes": 19257,
+  "index_gzip_bytes": 25957,
   "chunks": 64,
   "geometry_preserved_exactly": true,
   "total_chunk_gzip_bytes": 2577562,

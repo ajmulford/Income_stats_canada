@@ -93,7 +93,6 @@ try {
     await page
       .getByRole("button", {
         name: "Census area 12090312, $50,800",
-        exact: true,
       })
       .tap();
     await page.getByRole("heading", { name: "Census area 12090312" }).waitFor();

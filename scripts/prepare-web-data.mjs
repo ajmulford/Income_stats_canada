@@ -9,6 +9,7 @@ import {
 import { createHash } from "node:crypto";
 import { gzipSync, gunzipSync } from "node:zlib";
 import { resolve, join } from "node:path";
+import { nearestPlace } from "./nearby-place.mjs";
 
 const source = resolve("data/processed/hrm");
 const target = resolve("public/data/hrm");
@@ -77,7 +78,9 @@ if (
 const geojson = await readJSON("income.geojson");
 if (geojson.features.length !== validation.areas)
   throw new Error("Area count differs from validation.");
-const rows = geojson.features.map(({ properties: p }) => ({
+const sourcePlaces = await readJSON("places.json");
+const namedAreas = new Set(sourcePlaces.filter(p => p.containing_da_uids.length === 1).flatMap(p => p.containing_da_uids));
+const rows = geojson.features.map(({ properties: p, geometry }) => ({
   id: p.da_uid,
   income: p.median_household_income_cad,
   status: p.availability_status,
@@ -86,6 +89,7 @@ const rows = geojson.features.map(({ properties: p }) => ({
   caution: p.income_quality_caution,
   note: p.income_quality_note,
   source: p.source_url,
+  ...(!namedAreas.has(p.da_uid) ? { nearbyPlace: nearestPlace(bounds(geometry), sourcePlaces) } : {}),
 }));
 if (new Set(rows.map((r) => r.id)).size !== rows.length)
   throw new Error("Duplicate area IDs.");
@@ -180,7 +184,7 @@ try {
     }
   }
   await compressed("all-areas.json", { type: "FeatureCollection", features });
-  const places = (await readJSON("places.json")).map((p) => ({
+  const places = sourcePlaces.map((p) => ({
     id: p.place_id,
     name: p.name,
     lat: p.latitude,
