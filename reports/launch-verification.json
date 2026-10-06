@@ -1,7 +1,7 @@
 {
   "status": "published_verified",
   "date": "2026-10-06",
-  "candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
+  "candidate_sha256": "72e0f6d027bc4cb686f3867eeadc015e7e47f53514b5a99b90a9c23357a3cf5a",
   "checks": {
     "reviewed_data_rebuild": "passed",
     "python_tests": {
@@ -26,32 +26,32 @@
     "local_served_artifacts": "passed",
     "mobile_emulation": {
       "status": "passed",
-      "median_ms": 3385.9000000953674
+      "median_ms": 3359.2000000476837
     },
     "physical_phone": "passed; tester-reported Pixel 9 / Android / Chrome, Alex, 2026-10-06",
     "actual_screen_reader": "passed; tester-reported TalkBack on Pixel 9 / Chrome, Alex, 2026-10-06",
     "github_ci_execution": {
       "status": "passed",
-      "run_id": 37522280672,
-      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37522280672",
-      "commit": "2238a37c467a342d69cf1ad41ed408f501e7c4ef",
+      "run_id": 37523977893,
+      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37523977893",
+      "commit": "eb406d7f7d69d2a22b4de1db8ade2bfb05348bd0",
       "runner": "macos-26 (ARM)",
       "candidate_matches_local": true
     },
     "github_pages_deployment": {
       "status": "passed",
-      "run_id": 37522280672,
-      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37522280672",
-      "commit": "2238a37c467a342d69cf1ad41ed408f501e7c4ef",
+      "run_id": 37523977893,
+      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37523977893",
+      "commit": "eb406d7f7d69d2a22b4de1db8ade2bfb05348bd0",
       "release_date": "2026-10-06",
       "site_url": "https://ajmulford.github.io/Income_stats_canada/",
-      "content_sha256": "427b3b7a2e6a600f21c0321c4e4d669064459f6dfe9801e32495d7d9b43c2e6e",
+      "content_sha256": "1ca9758b22ca6abea9691740374789244e3c4db9461fd3085e96f60cd50f77da",
       "hosted_artifact_smoke": "passed"
     },
     "hosted_performance": {
       "status": "passed",
       "report": "reports/mobile-performance-hosted.json",
-      "median_ms": 3458.2999999523163,
+      "median_ms": 3490.199999809265,
       "all_three_runs_pass": true,
       "live_income_selection": "passed in all four runs; DA 12090312, $50,800",
       "income_index_content_encoding": "gzip"
@@ -65,11 +65,13 @@
       "node20_deprecation_annotation": false
     },
     "manual_check_report": {
-      "status": "passed",
+      "status": "prior_checks_carried_forward_visual_only",
       "evidence": "release/verification.json",
       "tester": "Alex",
       "tested_at": "2026-10-06",
-      "changes_needed": false
+      "changes_needed": false,
+      "new_physical_checks_performed": false,
+      "authorization": "Alex explicitly requested publication of the opacity-only update"
     }
   },
   "hosting": {
