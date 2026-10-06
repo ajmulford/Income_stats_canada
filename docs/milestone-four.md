@@ -1,6 +1,6 @@
 # Milestone four: verify and release
 
-Status on October 6, 2026: **release implementation and local automated checks are ready; publication remains pending**. The remote points to the public repository `ajmulford/Income_stats_canada`; publication workflows are now included in the reviewed configuration. GitHub validation passed with an exact match to the locally tested candidate. Pages is configured for Actions with deployment restricted to `main`; no site has been deployed, and actual physical-phone/screen-reader checks are not recorded. This milestone is not marked complete while those launch criteria remain outstanding.
+Status on October 6, 2026: **release implementation and local automated checks are ready; publication remains pending**. The remote points to the public repository `ajmulford/Income_stats_canada`; publication workflows are now included in the reviewed configuration. GitHub validation passed with an exact match to the locally tested candidate. Pages is configured for Actions with deployment restricted to `main`; no site has been deployed, and Alex has confirmed successful physical-phone and TalkBack checks on Pixel 9 / Chrome on October 6. This milestone is not marked complete while those launch criteria remain outstanding.
 
 ## Prepared release implementation
 
@@ -29,9 +29,9 @@ See [publication decision](adr/0004-reviewed-publication.md) and the concrete [m
 | Release-gate regression checks | Six passed |
 | Workflow syntax | Passed with actionlint 1.7.12; ShellCheck was not run |
 | Served artifact/CSV smoke check | Passed on local production preview |
-| Physical phone and actual screen reader | Pending |
+| Physical phone and actual screen reader | Passed; Alex reports Pixel 9 / Android / Chrome and TalkBack, October 6; no changes needed |
 | GitHub-hosted macOS/ARM verification | Passed; exact local candidate match, 22 Python tests, six release-gate tests, 45 browser checks |
-| Pages deployment | Pending manual launch checks |
+| Pages deployment | Pending |
 | Hosted compression/performance and real URL verification | Pending |
 
 The browser suite includes source-value map/list agreement, suppression, duplicate/uncontained places, rural Sheet Harbour selection, full-HRM coverage, keyboard/mobile panel interaction, original CSV download, failed tiles/geometry, both gzip transports and plain JSON, exact band edges, and project-subdirectory hosting. All automatic tile requests are intercepted or disabled; no OSM tiles are scraped for tests.
@@ -52,11 +52,10 @@ OSM standard tiles provide best-effort availability without a service guarantee.
 
 ## Remaining steps to complete the milestone
 
-1. Perform the physical-phone and actual screen-reader scenarios in [the checklist](release-checklist.md). Complete [release/verification.json](../release/verification.json) with honest device/browser, tester, timestamp, findings, and the exact candidate identity. Resolve any failures and reverify changed content.
-2. Keep the GitHub-built candidate identical to the manually tested content. Platform/source differences fail closed and require investigation rather than silent approval.
-3. Run the gated publication workflow on the configured GitHub Actions Pages source. Record the actual URL/date/commit and verify the deployed artifact and cold-cache hosted performance before announcing the release.
+1. Keep the GitHub-built candidate identical to the manually tested content. Platform/source differences fail closed and require investigation rather than silent approval.
+2. Run the gated publication workflow on the configured GitHub Actions Pages source. Record the actual URL/date/commit and verify the deployed artifact and cold-cache hosted performance before announcing the release.
 
-The user authorized making the repository public and committing/pushing the outstanding release configuration. The user configured the remote and pushed the committed application. This follow-up made the repository public with explicit authorization, using the owner’s existing authentication. The site remains unpublished while manual launch checks are pending.
+The user authorized making the repository public and committing/pushing the outstanding release configuration. The user configured the remote and pushed the committed application. This follow-up made the repository public with explicit authorization, using the owner’s existing authentication. The site remains unpublished; manual launch checks have since been confirmed by Alex.
 
 ## First GitHub run and reproducibility fix
 
@@ -69,3 +68,9 @@ The next Linux build passed all census/geography checks and 22 Python tests but 
 The successful [GitHub verification run](https://github.com/ajmulford/Income_stats_canada/actions/runs/37518592636) checked commit `ab57c84ff992fadefd5ec49d98334c9db225950e`. Its audited candidate is `2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b`, identical to the local candidate and performance evidence identity. All 45 browser checks passed on the hosted runner.
 
 The [verification-only release run](https://github.com/ajmulford/Income_stats_canada/actions/runs/37519102706) also passed. Publication was disabled. The retained candidate was downloaded and every served file checked against its manifest; its fingerprint matches the local candidate exactly.
+
+## Node 24 action maintenance
+
+The successful first release dry run carried a Node 20 deprecation annotation for cache/artifact actions. Workflow actions were updated to checksum-pinned official Node 24 releases: cache 6.1.0, upload-artifact 7.0.1, download-artifact 8.0.1, configure-pages 6.0.0, upload-pages-artifact 5.0.0, and deploy-pages 5.0.1. The Pages upload composite also uses a Node 24 artifact action. Workflow syntax passed actionlint; the [updated verification-only release run](https://github.com/ajmulford/Income_stats_canada/actions/runs/37520669068) passed all 45 browser checks and retained the identical candidate without the Node 20 deprecation warning. Site content and its candidate fingerprint are unchanged.
+
+The user reports successful physical-phone and screen-reader checks. Alex clarified the tested environment as Pixel 9 / latest Android / Chrome with TalkBack, tested October 6, with no changes needed. [Manual evidence](../release/verification.json) records that report; version numbers and exact clock time were not supplied.

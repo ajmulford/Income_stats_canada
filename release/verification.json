@@ -3,19 +3,19 @@
   "checks": [
     {
       "name": "physical_phone",
-      "status": "pending",
-      "environment": "",
-      "tester": "",
-      "tested_at": "",
-      "notes": ""
+      "status": "passed",
+      "environment": "Google Pixel 9; Android (tester reports latest version); Chrome",
+      "tester": "Alex",
+      "tested_at": "2026-10-06",
+      "notes": "Alex confirmed this check passed on October 6, 2026, with no changes needed. Android/Chrome version numbers and exact test time were not recorded. Evidence recorded from tester report."
     },
     {
       "name": "screen_reader",
-      "status": "pending",
-      "environment": "",
-      "tester": "",
-      "tested_at": "",
-      "notes": ""
+      "status": "passed",
+      "environment": "Google Pixel 9; Android (tester reports latest version); Chrome; TalkBack",
+      "tester": "Alex",
+      "tested_at": "2026-10-06",
+      "notes": "Alex confirmed this check passed on October 6, 2026, with no changes needed. Android/Chrome version numbers and exact test time were not recorded. Evidence recorded from tester report."
     }
   ]
 }

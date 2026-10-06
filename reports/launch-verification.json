@@ -28,8 +28,8 @@
       "status": "passed",
       "median_ms": 3385.9000000953674
     },
-    "physical_phone": "pending",
-    "actual_screen_reader": "pending",
+    "physical_phone": "passed; tester-reported Pixel 9 / Android / Chrome, Alex, 2026-10-06",
+    "actual_screen_reader": "passed; tester-reported TalkBack on Pixel 9 / Chrome, Alex, 2026-10-06",
     "github_ci_execution": {
       "status": "passed",
       "run_id": 37518592636,
@@ -42,11 +42,18 @@
     "hosted_performance": "pending",
     "release_workflow_dry_run": {
       "status": "passed",
-      "run_id": 37519102706,
-      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37519102706",
+      "run_id": 37520669068,
+      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37520669068",
       "publish": false,
-      "retained_artifact_hashes": "passed",
-      "candidate_matches_local": true
+      "candidate_matches_local": true,
+      "node20_deprecation_annotation": false
+    },
+    "manual_check_report": {
+      "status": "passed",
+      "evidence": "release/verification.json",
+      "tester": "Alex",
+      "tested_at": "2026-10-06",
+      "changes_needed": false
     }
   },
   "hosting": {
@@ -55,9 +62,7 @@
     "monthly_target_cad": 0,
     "cost_assumptions": "Public repository, standard macOS/ARM verification and Ubuntu deployment runners, free Pages domain, default cache limit, artifact storage within free allowance; account-wide budgets and other usage not inspected"
   },
-  "publication_blockers": [
-    "Required physical-phone and screen-reader checks not completed"
-  ],
+  "publication_blockers": [],
   "repository": {
     "name": "ajmulford/Income_stats_canada",
     "visibility": "public",
