@@ -1,6 +1,6 @@
 # Milestone four: verify and release
 
-Status on October 6, 2026: **release implementation and local automated checks are ready; publication remains pending**. The remote points to the public repository `ajmulford/Income_stats_canada`; publication workflows are now included in the reviewed configuration. GitHub validation passed with an exact match to the locally tested candidate. Pages is configured for Actions with deployment restricted to `main`; no site has been deployed, and Alex has confirmed successful physical-phone and TalkBack checks on Pixel 9 / Chrome on October 6. This milestone is not marked complete while those launch criteria remain outstanding.
+Status on October 6, 2026: **complete — published and verified**. [Halifax Income Atlas](https://ajmulford.github.io/Income_stats_canada/) is live. The gated [publication run](https://github.com/ajmulford/Income_stats_canada/actions/runs/37522280672) passed the reviewed-data build, 22 Python tests, seven release tests, 45 browser checks, manual/performance gate, deployment, and hosted artifact checks. Alex confirmed successful Pixel 9 / Chrome / TalkBack checks. All three hosted cold-cache mobile runs passed five seconds.
 
 ## Prepared release implementation
 
@@ -8,7 +8,7 @@ Status on October 6, 2026: **release implementation and local automated checks a
 - Ordinary pushes/pull requests never publish. The manual release workflow defaults to verification only; publication requires the public repository's default branch and the recorded launch checks.
 - [Reviewed release configuration](../data/reviewed-release.json) pins the original income and CSV hashes independently of the generated manifest. The browser-data preparation step rejects an unreviewed income release.
 - The audit verifies every generated browser artifact, rejects unexpected files/symlinks, checks geography/availability counts and the Pages size limit, and writes [candidate evidence](../reports/release-candidate.json) plus `dist/release.json`.
-- The release gate checks manual physical-phone/screen-reader evidence and three passing mobile-emulation runs against the exact candidate fingerprint. Six regression tests cover valid evidence, missing geometry, changed CSV, stale manual evidence, a pending screen-reader check, and stale performance evidence. Fabricated positive evidence exists only in temporary test fixtures; the real verification file remains pending.
+- The release gate checks manual physical-phone/screen-reader evidence and three passing mobile-emulation runs against the exact candidate fingerprint. Seven regression tests cover valid evidence, missing geometry, changed CSV, stale manual evidence, a pending screen-reader check, stale performance evidence, and publication stamping. Fabricated positive evidence exists only in temporary test fixtures; the real verification file remains pending.
 - Publication stamps its actual America/Halifax release date after the gate passes. The preview remains explicitly unpublished. Metadata distinguishes source snapshot, income/census years, data identity, candidate/published content hashes, commit, and a dirty local working tree.
 - Post-deployment checks compare hosted HTML, application assets, income index, and CSV against the deployed manifest. They support root and project-subdirectory URLs. Hosted performance is measured separately after deployment.
 - Basemap settings are replaceable through [data/basemap.json](../data/basemap.json). Attribution and zoom controls sit at the top of the map, away from the phone bottom panel. A valid browser referrer policy, ordinary tile caching, HTTPS OSM URL, viewport-only requests, and failure independence are preserved.
@@ -26,13 +26,13 @@ See [publication decision](adr/0004-reviewed-publication.md) and the concrete [m
 | Resident scenarios | 15 per engine, 45 passed total |
 | Engines | Installed Chrome 154, Playwright Firefox 155, Playwright WebKit 26.6 on macOS |
 | Automated accessibility | Axe WCAG 2 A/AA and 2.1 AA checks passed before/after phone-layout selection in all three engines |
-| Release-gate regression checks | Six passed |
+| Release-gate regression checks | Seven passed |
 | Workflow syntax | Passed with actionlint 1.7.12; ShellCheck was not run |
 | Served artifact/CSV smoke check | Passed on local production preview |
 | Physical phone and actual screen reader | Passed; Alex reports Pixel 9 / Android / Chrome and TalkBack, October 6; no changes needed |
-| GitHub-hosted macOS/ARM verification | Passed; exact local candidate match, 22 Python tests, six release-gate tests, 45 browser checks |
-| Pages deployment | Pending |
-| Hosted compression/performance and real URL verification | Pending |
+| GitHub-hosted macOS/ARM verification | Passed; exact local candidate match, 22 Python tests, seven release-gate tests, 45 browser checks |
+| Pages deployment | Passed; hosted HTML/assets/index/CSV hashes verified |
+| Hosted compression/performance and real URL verification | Passed; gzip income index, all three mobile runs below five seconds |
 
 The browser suite includes source-value map/list agreement, suppression, duplicate/uncontained places, rural Sheet Harbour selection, full-HRM coverage, keyboard/mobile panel interaction, original CSV download, failed tiles/geometry, both gzip transports and plain JSON, exact band edges, and project-subdirectory hosting. All automatic tile requests are intercepted or disabled; no OSM tiles are scraped for tests.
 
@@ -40,7 +40,7 @@ The WebKit checks exercise the engine, not an actual iPhone/Safari/VoiceOver com
 
 ## Performance and hosting assessment
 
-The current [mobile measurement](../reports/mobile-performance-milestone-four.json) is bound to the audited candidate hash. It uses the same cold-cache profile as milestones two/three: 390×844 touch viewport at scale 3, 150 ms latency, 1.6 Mbps download, 750 Kbps upload, 4× CPU slowdown, fresh contexts, and no external tiles. Timing ends after index/list/search and initial-viewport geometry are loaded and two animation frames have elapsed. Every run performs a real touch selection and verifies DA 12090312 at $50,800. The normal runs reached usability in 3.390, 3.381, 3.386 seconds; their median is **3.386 seconds**. All three pass the five-second target. These are local browser-emulation measurements; the live host remains unmeasured.
+The current [mobile measurement](../reports/mobile-performance-milestone-four.json) is bound to the audited candidate hash. It uses the same cold-cache profile as milestones two/three: 390×844 touch viewport at scale 3, 150 ms latency, 1.6 Mbps download, 750 Kbps upload, 4× CPU slowdown, fresh contexts, and no external tiles. Timing ends after index/list/search and initial-viewport geometry are loaded and two animation frames have elapsed. Every run performs a real touch selection and verifies DA 12090312 at $50,800. The normal runs reached usability in 3.390, 3.381, 3.386 seconds; their median is **3.386 seconds**. All three pass the five-second target. These are local browser-emulation measurements; hosted results are recorded below.
 
 The site is approximately **20.75 MB**, excluding its small self-describing manifest, below the current **1 GB** Pages site limit. GitHub Pages supports public repositories on GitHub Free and has a **100 GB/month soft bandwidth limit**; the ten-builds/hour limit does not apply to custom Actions workflows. [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits).
 
@@ -50,12 +50,11 @@ Normal full-HRM geometry delivery is about 2.58 MB compressed plus the income/pl
 
 OSM standard tiles provide best-effort availability without a service guarantee. The implementation uses the prescribed HTTPS URL, visible attribution, normal browser caching/referrers, and interactive viewport requests; it does not offer offline downloads or bulk prefetch. Review the replaceable provider if traffic grows. [OSM tile policy](https://operations.osmfoundation.org/policies/tiles/).
 
-## Remaining steps to complete the milestone
+## Published release
 
-1. Keep the GitHub-built candidate identical to the manually tested content. Platform/source differences fail closed and require investigation rather than silent approval.
-2. Run the gated publication workflow on the configured GitHub Actions Pages source. Record the actual URL/date/commit and verify the deployed artifact and cold-cache hosted performance before announcing the release.
+The site was published on October 6, 2026 from commit `2238a37c467a342d69cf1ad41ed408f501e7c4ef`. [Published release evidence](../reports/published-release.json) records candidate `2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b` and published content `427b3b7a2e6a600f21c0321c4e4d669064459f6dfe9801e32495d7d9b43c2e6e`; stamping publication labels accounts for the difference.
 
-The user authorized making the repository public and committing/pushing the outstanding release configuration. The user configured the remote and pushed the committed application. This follow-up made the repository public with explicit authorization, using the owner’s existing authentication. The site remains unpublished; manual launch checks have since been confirmed by Alex.
+[Hosted mobile measurements](../reports/mobile-performance-hosted.json) used the same cold-cache, network, viewport, and CPU profile as local validation. The three chunked runs took 3.458, 3.437, and 3.461 seconds (median **3.458 seconds**), all below five seconds. Each run selected census area 12090312 and verified $50,800. The income index was served with `Content-Encoding: gzip`. GitHub's post-deployment smoke check verified hosted HTML, assets, index, and original CSV against the published manifest. Basemap tiles were disabled during measurement.
 
 ## First GitHub run and reproducibility fix
 
@@ -74,3 +73,5 @@ The [verification-only release run](https://github.com/ajmulford/Income_stats_ca
 The successful first release dry run carried a Node 20 deprecation annotation for cache/artifact actions. Workflow actions were updated to checksum-pinned official Node 24 releases: cache 6.1.0, upload-artifact 7.0.1, download-artifact 8.0.1, configure-pages 6.0.0, upload-pages-artifact 5.0.0, and deploy-pages 5.0.1. The Pages upload composite also uses a Node 24 artifact action. Workflow syntax passed actionlint; the [updated verification-only release run](https://github.com/ajmulford/Income_stats_canada/actions/runs/37520669068) passed all 45 browser checks and retained the identical candidate without the Node 20 deprecation warning. Site content and its candidate fingerprint are unchanged.
 
 The user reports successful physical-phone and screen-reader checks. Alex clarified the tested environment as Pixel 9 / latest Android / Chrome with TalkBack, tested October 6, with no changes needed. [Manual evidence](../release/verification.json) records that report; version numbers and exact clock time were not supplied.
+
+The first publication attempt stopped before deployment because the stamping step expected a release-status span absent from the reviewed preview footer. The fix stamps the existing reviewed footer only during publication, preserving candidate identity. A regression test verifies the date/status labels, retained candidate fingerprint, and changed published-content fingerprint. The corrected publication run passed.

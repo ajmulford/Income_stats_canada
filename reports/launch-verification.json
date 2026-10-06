@@ -1,5 +1,5 @@
 {
-  "status": "candidate_verified_publication_pending",
+  "status": "published_verified",
   "date": "2026-10-06",
   "candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
   "checks": {
@@ -20,7 +20,7 @@
     },
     "release_gate_tests": {
       "status": "passed",
-      "count": 6
+      "count": 7
     },
     "workflow_syntax": "passed; actionlint 1.7.12, shellcheck not run",
     "local_served_artifacts": "passed",
@@ -32,14 +32,30 @@
     "actual_screen_reader": "passed; tester-reported TalkBack on Pixel 9 / Chrome, Alex, 2026-10-06",
     "github_ci_execution": {
       "status": "passed",
-      "run_id": 37518592636,
-      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37518592636",
-      "commit": "ab57c84ff992fadefd5ec49d98334c9db225950e",
+      "run_id": 37522280672,
+      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37522280672",
+      "commit": "2238a37c467a342d69cf1ad41ed408f501e7c4ef",
       "runner": "macos-26 (ARM)",
       "candidate_matches_local": true
     },
-    "github_pages_deployment": "pending",
-    "hosted_performance": "pending",
+    "github_pages_deployment": {
+      "status": "passed",
+      "run_id": 37522280672,
+      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37522280672",
+      "commit": "2238a37c467a342d69cf1ad41ed408f501e7c4ef",
+      "release_date": "2026-10-06",
+      "site_url": "https://ajmulford.github.io/Income_stats_canada/",
+      "content_sha256": "427b3b7a2e6a600f21c0321c4e4d669064459f6dfe9801e32495d7d9b43c2e6e",
+      "hosted_artifact_smoke": "passed"
+    },
+    "hosted_performance": {
+      "status": "passed",
+      "report": "reports/mobile-performance-hosted.json",
+      "median_ms": 3458.2999999523163,
+      "all_three_runs_pass": true,
+      "live_income_selection": "passed in all four runs; DA 12090312, $50,800",
+      "income_index_content_encoding": "gzip"
+    },
     "release_workflow_dry_run": {
       "status": "passed",
       "run_id": 37520669068,
@@ -57,7 +73,7 @@
     }
   },
   "hosting": {
-    "site_bytes_excluding_release_manifest": 20745033,
+    "site_bytes_excluding_release_manifest": 20745080,
     "pages_limit_bytes": 1000000000,
     "monthly_target_cad": 0,
     "cost_assumptions": "Public repository, standard macOS/ARM verification and Ubuntu deployment runners, free Pages domain, default cache limit, artifact storage within free allowance; account-wide budgets and other usage not inspected"
