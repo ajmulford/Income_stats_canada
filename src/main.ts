@@ -237,11 +237,16 @@ function enableBasemap() {
   });
 }
 const detailsToggle = element<HTMLButtonElement>("toggle-details");
+const phoneDetails = matchMedia("(max-width: 760px)");
 function setDetailsExpanded(expanded: boolean) {
+  expanded = expanded || !phoneDetails.matches;
   detailsToggle.setAttribute("aria-expanded", String(expanded));
   detailsToggle.textContent = expanded ? "Collapse details" : "Expand details";
   element("details").hidden = !expanded;
 }
+phoneDetails.addEventListener("change", () => {
+  if (!phoneDetails.matches) setDetailsExpanded(true);
+});
 detailsToggle.addEventListener("click", () =>
   setDetailsExpanded(detailsToggle.getAttribute("aria-expanded") !== "true"),
 );
@@ -363,6 +368,15 @@ async function selectArea(id: string, navigate: boolean, revealMap = false) {
           behavior: "instant",
         });
       }
+      if (!phone && revealMap) {
+        const heading = element("details-title");
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+        window.scrollBy({
+          top: element("selection-panel").getBoundingClientRect().top - 16,
+          behavior: "instant",
+        });
+      }
       map.fitBounds(layer.getBounds(), {
         padding: [30, 30],
         maxZoom: 15,
@@ -400,7 +414,7 @@ function renderList() {
       button.append(label, income);
       if (row.caution) button.append(node("span", "Caution", "caution-badge"));
       button.addEventListener("click", (event) => {
-        // Pointer selection reveals the map; keyboard selection retains list focus.
+        // Pointer selection reveals the selected view; keyboard selection retains list focus.
         void selectArea(row.id, true, event.detail > 0);
       });
       item.append(button);

@@ -922,3 +922,9 @@ h1 {
     height: min(430px, calc(52dvh - 16px));
   }
 }
+
+@media (min-width: 761px) {
+  #toggle-details {
+    display: none;
+  }
+}

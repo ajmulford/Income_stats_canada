@@ -515,3 +515,35 @@ for (const viewport of [{width:390,height:844}, {width:360,height:640}, {width:7
   await expect(page.locator("#map")).toBeFocused();
 });
 }
+
+for (const viewport of [{width:1280,height:900}, {width:1440,height:720}]) {
+  test(`desktop list click reveals details beside the map at ${viewport.width}`, async ({page}) => {
+    await page.setViewportSize(viewport);
+    await ready(page);
+    await page.locator("#area-list button").last().click();
+    await expect.poll(async () => {
+      const details = (await page.locator("#details-title").boundingBox())!;
+      const amount = (await page.locator("#details .income-value").boundingBox())!;
+      const map = (await page.locator("#map").boundingBox())!;
+      return details.y >= 0 && amount.y + amount.height <= viewport.height && map.y >= 0 && map.y < viewport.height;
+    }).toBe(true);
+    await expect(page.locator("#details-title")).toBeFocused();
+  });
+}
+
+
+test("desktop details stay open after resizing from collapsed mobile details", async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  await ready(page);
+  await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill("12090312");
+  await page.getByRole("button", {name:"Census area 12090312, $50,800",exact:true}).click();
+  await page.getByRole("button", {name:"Collapse details"}).click();
+  await expect(page.locator("#details")).toBeHidden();
+  await page.setViewportSize({width:1280,height:900});
+  await expect(page.locator("#toggle-details")).toBeHidden();
+  await expect(page.locator("#details .income-value")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#details")).toBeVisible();
+  await page.setViewportSize({width:390,height:844});
+  await expect(page.getByRole("button", {name:"Collapse details"})).toBeVisible();
+});
