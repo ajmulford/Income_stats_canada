@@ -57,3 +57,9 @@ OSM standard tiles provide best-effort availability without a service guarantee.
 4. Enable GitHub Actions as the Pages source and run the gated publication workflow. Record the actual URL/date/commit and verify the deployed artifact and cold-cache hosted performance before announcing the release.
 
 The user authorized making the repository public and committing/pushing the outstanding release configuration. The user configured the remote and pushed the committed application. This follow-up made the repository public with explicit authorization, using the owner’s existing authentication. The site remains unpublished while manual launch checks are pending.
+
+## First GitHub run and reproducibility fix
+
+The repository was made public and the missing workflow configuration committed/pushed with explicit authorization. Pages uses the Actions build type; its deployment environment permits only `main`. No site artifact was published.
+
+The first Linux run ([37516843867](https://github.com/ajmulford/Income_stats_canada/actions/runs/37516843867)) correctly rejected changed ArcGIS item metadata. Comparison with the reviewed response showed only `lastViewed` and `numViews` differences; the income and boundary archive downloads matched their locks. The SDMX metadata snapshot also contains its response-preparation timestamp. The fix retains exact reviewed ancillary inputs in the 3.1 MB compressed `data/source-snapshots/` bundle and restores them only after original SHA-256 verification. No source lock, income value, geography, or checksum requirement was relaxed. Large census archives remain outside Git and the published site.

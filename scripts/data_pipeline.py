@@ -7,6 +7,8 @@ from collections import Counter
 import csv
 from decimal import Decimal, InvalidOperation
 import hashlib
+import gzip
+import shutil
 import io
 import json
 from pathlib import Path
@@ -69,6 +71,18 @@ def verify_sources() -> None:
         require(sha256(path) == source["sha256"], f"Source changed: {path}; review before updating lock.")
 
 
+def restore_reviewed_snapshot(snapshot: Path, destination: Path, expected_sha256: str) -> None:
+    """Restore exact reviewed bytes without accepting volatile live response headers."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=destination.parent) as folder:
+        temporary = Path(folder) / "snapshot"
+        with gzip.open(snapshot, "rb") as source, temporary.open("wb") as output:
+            shutil.copyfileobj(source, output)
+        require(sha256(temporary) == expected_sha256,
+                f"Reviewed snapshot changed: {snapshot}; restore the locked bytes.")
+        temporary.replace(destination)
+
+
 def fetch() -> None:
     """Cache only checksum-matching inputs; a changed live source requires review."""
     RAW.mkdir(parents=True, exist_ok=True)
@@ -77,6 +91,11 @@ def fetch() -> None:
         if destination.exists():
             require(sha256(destination) == source["sha256"], f"Cached source changed: {destination}")
             print(f"Verified {source['file']}", flush=True)
+            continue
+        snapshot = ROOT / "data/source-snapshots" / (source["file"] + ".gz")
+        if snapshot.exists():
+            restore_reviewed_snapshot(snapshot, destination, source["sha256"])
+            print(f"Restored reviewed {source['file']}", flush=True)
             continue
         with tempfile.TemporaryDirectory(dir=RAW) as folder:
             temporary = Path(folder) / "download"

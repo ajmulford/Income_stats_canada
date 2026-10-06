@@ -2,6 +2,8 @@
 
 import unittest
 import csv
+import gzip
+import hashlib
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -167,6 +169,32 @@ class IndependentSampleTests(unittest.TestCase):
         self.sample["FLAG"] = "O"
         with self.assertRaises(ValidationError):
             self.check()
+
+
+
+
+class ReviewedSnapshotTests(unittest.TestCase):
+    def test_restore_keeps_the_exact_reviewed_bytes(self):
+        original = b'{"numViews": 522914, "lastViewed": 1791291600000}\n'
+        with tempfile.TemporaryDirectory() as folder:
+            snapshot = Path(folder) / "reviewed.json.gz"
+            destination = Path(folder) / "raw" / "reviewed.json"
+            snapshot.write_bytes(gzip.compress(original, mtime=0))
+            data_pipeline.restore_reviewed_snapshot(snapshot, destination,
+                                                    hashlib.sha256(original).hexdigest())
+            self.assertEqual(destination.read_bytes(), original)
+
+    def test_changed_snapshot_cannot_replace_a_previous_cache(self):
+        original = b"reviewed input"
+        with tempfile.TemporaryDirectory() as folder:
+            snapshot = Path(folder) / "reviewed.json.gz"
+            destination = Path(folder) / "reviewed.json"
+            snapshot.write_bytes(gzip.compress(b"changed input", mtime=0))
+            destination.write_bytes(original)
+            with self.assertRaisesRegex(ValidationError, "Reviewed snapshot changed"):
+                data_pipeline.restore_reviewed_snapshot(snapshot, destination,
+                                                        hashlib.sha256(original).hexdigest())
+            self.assertEqual(destination.read_bytes(), original)
 
 
 if __name__ == "__main__":
