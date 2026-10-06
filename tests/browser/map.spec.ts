@@ -415,3 +415,43 @@ test("ordinary wheel scrolls the page while Ctrl + wheel zooms the map", async (
     await page.keyboard.up("Control");
   }
 });
+
+
+for (const width of [390, 768, 1280, 1920]) {
+  test(`HRM overview frames mainland areas at viewport width ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await ready(page);
+    await page.getByRole("button", { name: "Show all HRM" }).click();
+    await expect(page.locator("body")).toHaveAttribute("data-map-state", "ready");
+    const indexResponse = await page.request.get("/data/hrm/index.json");
+    const index = await indexResponse.json();
+    expect(index.overviewBounds[2]).toBeLessThan(-62);
+    expect(index.bounds[2]).toBeGreaterThan(-60);
+    expect(index.rows).toHaveLength(604);
+    expect(index.rows.some((r: {id: string}) => r.id === "12090845")).toBe(true);
+    // At the full mainland overview, a representative urban point lies left of
+    // centre. Project the independently calculated mainland fit into screen pixels.
+    const box = (await page.locator("#map").boundingBox())!;
+    const b = index.overviewBounds;
+    const y = (lat: number) => (1 - Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) / Math.PI) / 2;
+    const zoom = Math.floor(Math.min(
+      Math.log2((box.width - 32) / ((b[2] - b[0]) / 360 * 256)),
+      Math.log2((box.height - 32) / ((y(b[1]) - y(b[3])) * 256)),
+    ));
+    const scale = 256 * 2 ** Math.max(6, zoom);
+    const point = {lat: 44.645462989342825, lon: -63.59112404336591};
+    await page.locator("#map").scrollIntoViewIfNeeded();
+    const visible = (await page.locator("#map").boundingBox())!;
+    await page.mouse.click(
+      visible.x + visible.width / 2 + (point.lon - (b[0] + b[2]) / 2) / 360 * scale,
+      visible.y + visible.height / 2 + (y(point.lat) - (y(b[1]) + y(b[3])) / 2) * scale,
+    );
+    await expect(page.locator("#selection-panel")).toHaveClass(/has-selection/);
+    await page.getByRole("button", { name: "Urban view", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Zoom out", exact: true })).toHaveAttribute("aria-disabled", "false");
+    // The retained offshore area can still be selected and navigated to.
+    await page.getByRole("searchbox", {name: "Filter census areas by identifier"}).fill("12090845");
+    await page.getByRole("button", {name: "Census area 12090845, Income unavailable",exact: true}).click();
+    await expect(page.getByRole("heading", {name:"Census area 12090845"})).toBeVisible();
+  });
+}

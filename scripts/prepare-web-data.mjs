@@ -115,6 +115,12 @@ const unionBounds = (group) => [
   Math.max(...group.map((f) => f.bbox[2])),
   Math.max(...group.map((f) => f.bbox[3])),
 ];
+const viewConfig = JSON.parse(await readFile(resolve("data/map-view.json"), "utf8"));
+const excluded = new Set(viewConfig.overview_excluded_area_ids);
+if ([...excluded].some((id) => !rows.some((row) => row.id === id)))
+  throw new Error("Overview configuration names an unknown census area.");
+const overviewFeatures = features.filter((f) => !excluded.has(f.properties.id));
+if (!overviewFeatures.length) throw new Error("Overview has no census areas.");
 // Spatially partition complete source polygons. No coordinate rounding or simplification.
 function partition(group) {
   if (group.length <= 12) return [group];
@@ -190,6 +196,7 @@ try {
     releaseId: reviewedRelease.release_id,
     sourceHash: manifest.files["income.geojson"].sha256,
     bounds: unionBounds(features),
+    overviewBounds: unionBounds(overviewFeatures),
     rows,
     places,
     chunks,

@@ -1,0 +1,6 @@
+{
+  "overview_excluded_area_ids": [
+    "12090845"
+  ],
+  "reason": "Frame mainland HRM for the overview; retain the distant offshore census area in the map dataset, area list, and CSV."
+}

@@ -84,7 +84,7 @@ A source quality flag applicable to a published income value that calls for caut
 ## Flagged ambiguities
 
 - The primary purpose is resolved: public information for residents comparing household income; specialised decision-support purposes have not been agreed.
-- Geographic extent is resolved: all of HRM; the opening view focuses on urban Halifax–Dartmouth with a prominent "Show all HRM" control.
+- Geographic extent is resolved: all of HRM; the opening view focuses on urban Halifax–Dartmouth with a prominent "Show all HRM" control. Its overview frames mainland HRM, as approved October 6, 2026; the distant offshore census area remains in the data, list, CSV, and selectable map. Overview framing is distinct from dataset coverage.
 - Geography vintage is resolved: matching 2021 municipal and dissemination-area census boundaries.
 - Official membership and coverage are verified for the October 6, 2026 source snapshot; the original geographic code identifies the municipal CSD, not CMA 205.
 - HRM community polygons represent civic communities, not every commonly used neighbourhood; source metadata warns some boundaries await consultation, so validity does not establish finality.

@@ -40,6 +40,7 @@ export interface Index {
   snapshotDate: string;
   sourceHash: string;
   bounds: Bounds;
+  overviewBounds: Bounds;
   rows: Area[];
   places: Place[];
   chunks: Chunk[];

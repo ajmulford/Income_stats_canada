@@ -44,7 +44,8 @@ const next = element<HTMLButtonElement>("next-page");
 const retry = element<HTMLButtonElement>("retry-map");
 const map = L.map("map", {
   preferCanvas: true,
-  minZoom: 8,
+  // Full municipal bounds need zoom 6 on narrow phone screens.
+  minZoom: 6,
   maxZoom: 18,
   zoomControl: false,
   scrollWheelZoom: false,
@@ -66,7 +67,7 @@ map.getContainer().addEventListener(
     clearTimeout(wheelTimer);
     wheelTimer = setTimeout(() => {
       const steps = Math.min(4, Math.ceil(Math.abs(wheelDelta) / 120));
-      const zoom = Math.max(8, Math.min(18, map.getZoom() - Math.sign(wheelDelta) * steps));
+      const zoom = Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(), map.getZoom() - Math.sign(wheelDelta) * steps));
       wheelDelta = 0;
       map.setZoomAround(position, zoom);
     }, 40);
@@ -511,7 +512,7 @@ async function initialise() {
       renderList();
     });
     element("full-view").addEventListener("click", () =>
-      map.fitBounds(leafletBounds(index.bounds), {
+      map.fitBounds(leafletBounds(index.overviewBounds), {
         padding: [16, 16],
         animate: false,
       }),
