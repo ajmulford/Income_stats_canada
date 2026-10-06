@@ -1,0 +1,15 @@
+{
+  "measure": "median_before_tax_total_household_income",
+  "income_year": 2020,
+  "currency": "CAD",
+  "approved_date": "2026-10-06",
+  "bands": [
+    { "lower_inclusive_cad": null, "upper_exclusive_cad": 40000 },
+    { "lower_inclusive_cad": 40000, "upper_exclusive_cad": 60000 },
+    { "lower_inclusive_cad": 60000, "upper_exclusive_cad": 80000 },
+    { "lower_inclusive_cad": 80000, "upper_exclusive_cad": 100000 },
+    { "lower_inclusive_cad": 100000, "upper_exclusive_cad": 120000 },
+    { "lower_inclusive_cad": 120000, "upper_exclusive_cad": 160000 },
+    { "lower_inclusive_cad": 160000, "upper_exclusive_cad": null }
+  ]
+}

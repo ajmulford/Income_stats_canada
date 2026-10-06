@@ -118,7 +118,7 @@ try {
   report.all_chunked_runs_pass = values.every((v) => v <= report.target_ms);
   await mkdir("reports", { recursive: true });
   await writeFile(
-    "reports/mobile-performance.json",
+    process.env.REPORT_PATH ?? "reports/mobile-performance.json",
     JSON.stringify(report, null, 2) + "\n",
   );
 } finally {

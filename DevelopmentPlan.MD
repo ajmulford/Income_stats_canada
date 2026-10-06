@@ -4,7 +4,7 @@
 
 Milestone one has been implemented and validated against official source snapshots retrieved October 6, 2026. See [milestone-one findings](docs/milestone-one.md) and [run instructions](README.md). The dataset contains all 604 dissemination areas belonging to the 2021 Halifax municipal census subdivision: 599 published income medians and five confidentiality-suppressed values. Six independent official API sample comparisons passed.
 
-Community/place-source feasibility has been assessed. Boundary consultation caveats, duplicate place representations, and one uncontained place point require explicit handling before final public search. Proposed dollar bands remain subject to review. Milestone two is implemented: a local TypeScript/Leaflet map, selection details, accessible paginated area list, and original CSV download use the reviewed dataset. Lossless spatial chunks reached initial usability in 3.34–3.35 seconds in three cold-cache mobile-emulation runs (five-second target); full geometry took 14.05 seconds. Ten browser checks passed. See [milestone-two findings](docs/milestone-two.md) for the measurement profile and limits. Final resident workflows, physical-device/manual accessibility verification, and deployment remain for milestones three and four.
+Community/place-source feasibility has been assessed. Boundary consultation caveats, duplicate place representations, and one uncontained place point require explicit handling before final public search. Fixed dollar bands were approved October 6, 2026; see [band decision](docs/adr/0003-fixed-income-bands.md). Milestone two is implemented: a local TypeScript/Leaflet map, selection details, accessible paginated area list, and original CSV download use the reviewed dataset. Lossless spatial chunks reached initial usability in 3.34–3.35 seconds in three cold-cache mobile-emulation runs (five-second target); full geometry took 14.05 seconds. Ten browser checks passed. See [milestone-two findings](docs/milestone-two.md) for the measurement profile and limits. Milestone three completes resident workflows, including directional place disambiguation, the documented point-navigation fallback, approved bands, and collapsible mobile details. See [milestone-three findings](docs/milestone-three.md). Physical-device/manual accessibility verification and deployment remain for milestone four.
 
 ## Agreed product purpose
 
@@ -44,7 +44,7 @@ Selecting a dissemination area opens a details panel showing:
 
 ## Agreed search scope
 
-Include community/place-name search in the first release. Choosing a result moves the map to that location; income remains attached to dissemination areas, not the search result or the whole named community. Full street-address search is deferred. Keep searches scoped to HRM. When multiple places match, display labelled results with enough verified location context to distinguish them and require the resident to choose, rather than silently opening the first match. Include verified aliases for alternate names. The place-name source remains to be verified.
+Include community/place-name search in the first release. Choosing a result moves the map to that location; income remains attached to dissemination areas, not the search result or the whole named community. Full street-address search is deferred. Keep searches scoped to HRM. When multiple places match, display labelled results with enough verified location context to distinguish them and require the resident to choose, rather than silently opening the first match. Include verified aliases for alternate names. The reviewed source is 2021 GeoSuite: 364 HRM place points, with no verified aliases in the source inventory. Case, accent, punctuation, and whitespace variations are normalized; unsupported neighbourhood names get an explicit no-results explanation.
 
 ## Agreed opening view
 
@@ -60,7 +60,7 @@ Include a keyboard- and screen-reader-accessible list of dissemination areas alo
 
 When reliable community boundaries exist, community search narrows the list to dissemination areas intersecting the selected boundary. Label the result explicitly, for example "Census areas intersecting Bedford." Retain each area's own income figure, including where it extends beyond the community. Community boundaries support navigation only; do not calculate a community-wide median. Boundary sources remain undecided.
 
-For a place without a reliable boundary, locate its map point and identify the dissemination area containing that point. Label it "Census area containing this place location" and explain that it does not represent the entire community. Keep the full accessible area list available. Do not invent a community boundary or use an arbitrary search radius. Handling points outside mapped coverage or without a containing area remains to be specified.
+For a place without a reliable boundary, locate its map point and identify the dissemination area containing that point. Label it "Census area containing this place location" and explain that it does not represent the entire community. Keep the full accessible area list available. Do not invent a community boundary or use an arbitrary search radius. Points outside mapped coverage or without a unique containing area are located with an explicit explanation and no assigned income. The initial release uses this point fallback for all reviewed place records because per-feature civic-boundary finality is not certified. See [navigation decision](docs/adr/0002-place-point-navigation.md).
 
 ## Agreed interpretation note
 
@@ -141,7 +141,7 @@ Launch with English interface and explanatory content. Organise interface text f
 3. Select the DAs belonging to the agreed coverage and join income records to their boundaries by geographic identifier.
 4. Preserve reported values and source flags. Apply the agreed unavailable-data treatment and value formatting. Investigate geographic membership or boundary inconsistencies before release.
 5. Produce a map dataset with source references, income reference year, census year, and geography vintage.
-6. Build the agreed public map and accessible area list; exact income-band thresholds and palette remain undecided.
+6. Build the agreed public map and accessible area list; approved fixed income bands and sequential palette are documented in [the band decision](docs/adr/0003-fixed-income-bands.md).
 
 Source starting point: [Statistics Canada 2021 Census Profile downloads](https://www12.statcan.gc.ca/census-recensement/2021/dp-pd/prof/details/download-telecharger.cfm?Lang=E).
 
@@ -171,8 +171,8 @@ Failed checks require a fix or explicit review of a change to the plan before pu
 
 - Verify actual source quality flags and implement the agreed caution/unavailable treatment.
 - Verify municipal membership and coverage, including separately enumerated census subdivisions within the surrounding geographic footprint.
-- Income-band thresholds, colour palette, and interpretation of comparisons.
-- Verify community-boundary and place-name sources, including aliases and distinguishing location context.
+- Approved income-band thresholds and palette are implemented; verify their interpretation in manual release checks.
+- Point navigation and distinguishing location context are implemented. Future aliases and boundary navigation require reviewed supporting evidence.
 - Specify the sample-check set, screen-reader/browser combinations, mobile measurement profile, and exact performance timing conditions.
 - Validate selected stack, delivery format, GitHub Pages limits, and basemap fallback against the agreed performance and cost targets.
 - Validate reuse with a second city after the HRM release; the city and timing remain undecided.

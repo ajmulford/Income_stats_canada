@@ -26,6 +26,32 @@ for (const [name, expected] of Object.entries(manifest.files)) {
 const validation = await readJSON("validation.json");
 if (validation.status !== "validated")
   throw new Error("A validated milestone-one dataset is required.");
+const bandConfig = JSON.parse(
+  await readFile(resolve("data/income-bands.json"), "utf8"),
+);
+if (
+  bandConfig.income_year !== validation.income_reference_year ||
+  bandConfig.currency !== "CAD" ||
+  bandConfig.measure !== "median_before_tax_total_household_income"
+)
+  throw new Error("Band definition does not match income measure.");
+const incomeBands = bandConfig.bands;
+if (
+  incomeBands.length !== 7 ||
+  incomeBands[0].lower_inclusive_cad !== null ||
+  incomeBands.at(-1).upper_exclusive_cad !== null ||
+  incomeBands.some(
+    (b, i) =>
+      (i > 0 &&
+        b.lower_inclusive_cad !== incomeBands[i - 1].upper_exclusive_cad) ||
+      (i < incomeBands.length - 1 &&
+        (!Number.isFinite(b.upper_exclusive_cad) ||
+          b.upper_exclusive_cad <= (b.lower_inclusive_cad ?? 0))),
+  )
+)
+  throw new Error(
+    "Income bands must be ordered, continuous, and unbounded at the ends.",
+  );
 const geojson = await readJSON("income.geojson");
 if (geojson.features.length !== validation.areas)
   throw new Error("Area count differs from validation.");
@@ -106,13 +132,17 @@ try {
   }
   const restored = new Map();
   for (const chunk of chunks) {
-    const saved = JSON.parse(gunzipSync(await readFile(join(stage, `${chunk.file}.gz`))).toString());
+    const saved = JSON.parse(
+      gunzipSync(await readFile(join(stage, `${chunk.file}.gz`))).toString(),
+    );
     for (const feature of saved.features) {
-      if (restored.has(feature.properties.id)) throw new Error("Duplicate delivered geometry.");
+      if (restored.has(feature.properties.id))
+        throw new Error("Duplicate delivered geometry.");
       restored.set(feature.properties.id, feature.geometry);
     }
   }
-  if (restored.size !== geojson.features.length) throw new Error("Delivered geometry count differs.");
+  if (restored.size !== geojson.features.length)
+    throw new Error("Delivered geometry count differs.");
   for (const original of geojson.features) {
     if (
       JSON.stringify(restored.get(original.properties.da_uid)) !==
@@ -140,7 +170,9 @@ try {
     rows,
     places,
     chunks,
-    proposedBands: validation.proposed_bands_not_approved,
+    incomeBands,
+    bandsApprovedDate: bandConfig.approved_date,
+    searchPolicy: "place_points_only_boundary_finality_unverified",
   });
   await write("income.csv", await readFile(join(source, "income.csv")));
   await write(

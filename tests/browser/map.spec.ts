@@ -212,17 +212,99 @@ test("full municipality and urban controls load their views without fabricated d
   await expect(page.locator("#area-list button")).toHaveCount(0);
 });
 
-test("loads raw gzip files when the host does not set Content-Encoding", async ({ page }) => {
+test("loads raw gzip files when the host does not set Content-Encoding", async ({
+  page,
+}) => {
   await page.route("**/data/hrm/**.json.gz", async (route) => {
-    const path = new URL(route.request().url()).pathname.replace(/^\//, "public/");
-    await route.fulfill({ body: await readFile(path), contentType: "application/octet-stream" });
+    const path = new URL(route.request().url()).pathname.replace(
+      /^\//,
+      "public/",
+    );
+    await route.fulfill({
+      body: await readFile(path),
+      contentType: "application/octet-stream",
+    });
   });
   await ready(page);
   await expect(page.locator("#area-list button")).toHaveCount(30);
 });
 
-test("uses plain JSON when streaming decompression is unavailable", async ({ page }) => {
-  await page.addInitScript(() => { Object.defineProperty(window, "DecompressionStream", { value: undefined }); });
+test("uses plain JSON when streaming decompression is unavailable", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "DecompressionStream", { value: undefined });
+  });
   await ready(page);
   await expect(page.locator("#area-list button")).toHaveCount(30);
+});
+
+test("phone selection panel expands, collapses, reopens, and preserves list focus", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await ready(page);
+  await page
+    .getByRole("searchbox", { name: "Filter census areas by identifier" })
+    .fill("12090312");
+  const area = page.getByRole("button", {
+    name: "Census area 12090312, $50,800",
+    exact: true,
+  });
+  await area.focus();
+  await page.keyboard.press("Enter");
+  await expect(area).toBeFocused();
+  await expect(page.locator("#selection-panel")).toHaveCSS("position", "fixed");
+  await expect(
+    page.getByRole("button", { name: "Collapse details" }),
+  ).toHaveAttribute("aria-expanded", "true");
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#details")).toBeHidden();
+  await expect(
+    page.getByRole("button", { name: "Expand details" }),
+  ).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#details .income-value")).toHaveText("$50,800");
+  await expect(page.locator("#details")).toBeVisible();
+});
+
+test("place search normalizes punctuation and gives directional duplicate labels", async ({
+  page,
+}) => {
+  await ready(page);
+  const search = page.getByRole("searchbox", {
+    name: "Community or place name",
+  });
+  await search.fill("  BEDFORD  ");
+  await expect(page.locator("#place-results button")).toHaveCount(2);
+  await expect(page.locator("#place-results")).toContainText(
+    "Eastern location",
+  );
+  await expect(page.locator("#place-results")).toContainText(
+    "Western location",
+  );
+  await search.fill("head-of-jeddore");
+  await expect(page.locator("#place-results button")).toHaveCount(2);
+  await search.fill("no-such-neighbourhood");
+  await expect(page.locator("#place-status")).toContainText(
+    "some neighbourhood names are absent",
+  );
+});
+
+test("approved bands keep exact thresholds and separate unavailable income", async ({
+  page,
+}) => {
+  await ready(page);
+  await expect(page.locator("#band-status")).toHaveText("Fixed dollar bands");
+  await expect(page.locator("#legend-bands li")).toHaveCount(8);
+  const { bandIndex } = await import("../../src/data");
+  const bands = JSON.parse(
+    await readFile("data/income-bands.json", "utf8"),
+  ).bands;
+  expect(
+    [
+      39999, 40000, 59999, 60000, 79999, 80000, 99999, 100000, 119999, 120000,
+      159999, 160000, 224000,
+    ].map((v) => bandIndex(v, bands)),
+  ).toEqual([0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6]);
 });

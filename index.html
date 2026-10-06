@@ -65,7 +65,7 @@
           <section class="legend" aria-labelledby="legend-title">
             <div class="legend-heading">
               <h3 id="legend-title">Median household income</h3>
-              <span>Draft dollar bands</span>
+              <span id="band-status">Fixed dollar bands</span>
             </div>
             <ul id="legend-bands"></ul>
             <p class="interpretation">
@@ -76,12 +76,23 @@
         </section>
         <aside class="sidebar" aria-label="Explore census areas">
           <section
+            id="selection-panel"
             class="selection-panel"
             aria-labelledby="details-title"
             aria-live="polite"
             aria-atomic="true"
           >
-            <p class="eyebrow">AREA DETAILS</p>
+            <div class="selection-heading">
+              <p class="eyebrow">AREA DETAILS</p>
+              <button
+                id="toggle-details"
+                type="button"
+                aria-expanded="true"
+                aria-controls="details"
+              >
+                Collapse details
+              </button>
+            </div>
             <h2 id="details-title">Start with an area.</h2>
             <div id="details">
               <p class="empty-description">
@@ -108,7 +119,7 @@
               autocomplete="off"
               disabled
             />
-            <p id="place-status" class="small-note">
+            <p id="place-status" class="small-note" role="status">
               Place locations identify a point, not a whole community.
             </p>
             <ul id="place-results"></ul>
@@ -151,19 +162,27 @@
             2021 Census. Coverage follows the 2021 Halifax municipal boundary,
             including rural communities.
           </p>
+          <p class="small-note">
+            Reviewed data snapshot: October 6, 2026. Preview — not yet
+            published.
+          </p>
           <details>
             <summary>Sources and how to read this map</summary>
             <p>
               Statistics Canada, 2021 Census Profile and 2021 census geography.
-              This preview uses proposed fixed dollar bands. No inflation
-              adjustment, wage projection, or additional income rounding has
-              been applied.
+              <span id="about-bands"
+                >Fixed dollar bands use the same thresholds across comparable
+                city maps.</span
+              >
+              No inflation adjustment, wage projection, or additional income
+              rounding has been applied.
             </p>
             <p>
               Values describe the households across each census area. They do
               not describe an individual home, individual income, or
-              affordability. Confidentiality-suppressed figures appear as
-              unavailable.
+              affordability. Income in 2020 may reflect pandemic-era changes and
+              should not be read as current income. Confidentiality-suppressed
+              figures appear as unavailable.
             </p>
             <p>
               Separately enumerated reserve subdivisions—Cole Harbour 30, Beaver
@@ -171,9 +190,12 @@
               Halifax municipal census subdivision used here.
             </p>
             <p>
-              Place lookup uses verified GeoSuite point records.
-              Community-boundary search and final search curation are still
-              being developed.
+              Place lookup uses verified GeoSuite point records. Civic-community
+              boundaries have unresolved consultation status, so search uses
+              place points. Duplicate names show separate locations. A point
+              identifies its containing census area, without assigning income to
+              an entire community. Try a more specific name if the result is
+              ambiguous; commonly used neighbourhood names may be absent.
             </p>
             <p>
               <a

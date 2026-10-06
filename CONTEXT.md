@@ -92,4 +92,7 @@ A source quality flag applicable to a published income value that calls for caut
 - The default income statistic is resolved: median before-tax total household income, rather than average or after-tax income.
 - Data timing is resolved: reported 2020 income from the 2021 Census; the first release does not estimate 2026 income or adjust for inflation.
 - Unavailable income is resolved: retain the area, explain the source reason when available, and do not substitute zero or a neighbouring area's value.
-- Colour classification is resolved: fixed dollar ranges, rather than city-specific ranks; thresholds will be chosen after inspecting the data.
+- Colour classification is resolved: fixed dollar ranges, rather than city-specific ranks; approved 2020 CAD thresholds are $40k, $60k, $80k, $100k, $120k, and $160k, with inclusive lower and exclusive upper bounds.
+
+- Initial navigation uses the reviewed GeoSuite place points because the current civic-community inventory does not certify per-feature boundary finality. Duplicate names remain distinct choices; uncontained points receive no income. See [navigation decision](docs/adr/0002-place-point-navigation.md).
+- No verified alternate-name aliases are present in the reviewed place inventory. Typographical normalization supports case, accent, whitespace, and punctuation variations without inventing name equivalences.

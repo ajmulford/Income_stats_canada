@@ -26,7 +26,6 @@ export interface Chunk {
 export interface Band {
   lower_inclusive_cad: number | null;
   upper_exclusive_cad: number | null;
-  areas: number;
 }
 export interface Index {
   city: string;
@@ -38,7 +37,7 @@ export interface Index {
   rows: Area[];
   places: Place[];
   chunks: Chunk[];
-  proposedBands: Band[];
+  incomeBands: Band[];
 }
 export type AreasGeoJSON = FeatureCollection<Geometry, { id: string }>;
 export const dataURL = (name: string) =>

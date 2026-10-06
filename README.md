@@ -1,6 +1,6 @@
 # Canadian household income maps
 
-A public income map starting with Halifax Regional Municipality. Milestones one and two are complete: a validated dataset and a working local map prototype. The public release follows the remaining workflow and launch checks.
+A public income map starting with Halifax Regional Municipality. Milestones one through three are complete: a validated dataset and resident workflows in a working local map. The public release follows the remaining workflow and launch checks.
 
 The agreed measure is **median before-tax total household income in 2020**, from the **2021 Census**, on **2021 dissemination areas** belonging to Halifax census subdivision `1209034`. Figures are Canadian dollars, with no wage projection, inflation adjustment, community interpolation, or additional rounding.
 
@@ -82,11 +82,11 @@ npm test
 npm run measure
 ```
 
-The measurement uses a fresh context, disabled cache, a 390×844 viewport, 150 ms latency, 1.6 Mbps download, and 4× CPU slowdown. It excludes external basemap tiles. See [milestone-two findings](docs/milestone-two.md), [delivery sizes](reports/web-data.json), and [recorded measurements](reports/mobile-performance.json).
+The measurement uses a fresh context, disabled cache, a 390×844 viewport, 150 ms latency, 1.6 Mbps download, and 4× CPU slowdown. It excludes external basemap tiles. See [milestone-two findings](docs/milestone-two.md), [delivery sizes](reports/web-data.json), and [milestone-three findings](docs/milestone-three.md). The original [milestone-two measurements](reports/mobile-performance.json) are retained; current evidence is in [milestone-three measurements](reports/mobile-performance-milestone-three.json). Set `REPORT_PATH=reports/mobile-performance-milestone-three.json` when repeating the current measurements.
 
 ## Limits requiring later work
 
-All income geometries retain the source coordinates. The initial urban map met the five-second target in three emulated mobile runs; physical-phone and deployed-host checks remain pending. Proposed fixed income bands are visibly marked as drafts. Current civic-community boundaries differ in vintage and purpose from census units; HRM warns some await consultation. Prototype search uses place points with coordinate disambiguation. Curated location labels, verified aliases, community-boundary behaviour, mobile selection panels, and manual screen-reader checks remain for milestone three and launch verification. The local prototype has not been deployed.
+All income geometries retain the source coordinates. The initial urban map met the five-second target in three emulated mobile runs; physical-phone and deployed-host checks remain pending. Fixed income bands are approved and configured in [data/income-bands.json](data/income-bands.json). Current civic-community boundaries differ in vintage and purpose from census units; HRM warns some await consultation. Search uses reviewed place points with direction, coordinate, and census-area labels. No verified aliases are available in the source inventory; unsupported names are explained. Community boundaries use the [documented point fallback](docs/adr/0002-place-point-navigation.md). Collapsible phone details are implemented. Manual screen-reader/device checks and deployment remain for launch verification. The local prototype has not been deployed.
 
 ## Source attribution
 

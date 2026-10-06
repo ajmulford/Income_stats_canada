@@ -1,3 +1,4 @@
+import { matchingPlaces, locationLabel } from "./place-search";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./style.css";
@@ -78,7 +79,7 @@ function style(id: string): L.PathOptions {
     fillColor:
       row.income === null
         ? "#d8d8d3"
-        : colours[bandIndex(row.income, index.proposedBands)],
+        : colours[bandIndex(row.income, index.incomeBands)],
     fillOpacity: 0.83,
     color: selected === id ? "#101f1d" : "#f8faf5",
     weight: selected === id ? 3 : 0.65,
@@ -191,7 +192,52 @@ function enableBasemap() {
     }
   });
 }
+const detailsToggle = element<HTMLButtonElement>("toggle-details");
+function setDetailsExpanded(expanded: boolean) {
+  detailsToggle.setAttribute("aria-expanded", String(expanded));
+  detailsToggle.textContent = expanded ? "Collapse details" : "Expand details";
+  element("details").hidden = !expanded;
+}
+detailsToggle.addEventListener("click", () =>
+  setDetailsExpanded(detailsToggle.getAttribute("aria-expanded") !== "true"),
+);
+document.addEventListener("keydown", (event) => {
+  if (
+    event.key === "Escape" &&
+    matchMedia("(max-width: 760px)").matches &&
+    element("selection-panel").classList.contains("has-selection")
+  ) {
+    setDetailsExpanded(false);
+    detailsToggle.focus({ preventScroll: true });
+  }
+});
+function revealFocusedControl() {
+  const active = document.activeElement;
+  const panel = element("selection-panel");
+  if (
+    !matchMedia("(max-width: 760px)").matches ||
+    !panel.classList.contains("has-selection") ||
+    !(active instanceof HTMLElement) ||
+    panel.contains(active) ||
+    !active.matches("button, input, a")
+  )
+    return;
+  const bottom = active.getBoundingClientRect().bottom;
+  const top = panel.getBoundingClientRect().top;
+  if (bottom > top - 12)
+    window.scrollBy({ top: bottom - top + 24, behavior: "instant" });
+}
+document.addEventListener("focusin", () =>
+  requestAnimationFrame(revealFocusedControl),
+);
+function showSelectionPanel() {
+  element("selection-panel").classList.add("has-selection");
+  document.body.classList.add("has-selection");
+  setDetailsExpanded(true);
+  requestAnimationFrame(revealFocusedControl);
+}
 function renderDetails(row: Area) {
+  showSelectionPanel();
   element("details-title").textContent = `Census area ${row.id}`;
   const content = element("details");
   const amount = node(
@@ -204,7 +250,7 @@ function renderDetails(row: Area) {
     "Median before-tax household income",
     "measure-label",
   );
-  const date = node("p", "2020 income · 2021 Census", "details-date");
+  const date = node("p", "2020 income · 2021 Census · CAD", "details-date");
   const pieces: HTMLElement[] = [amount, measure, date];
   if (row.note)
     pieces.push(
@@ -323,7 +369,7 @@ function renderLegend(bands: Band[]) {
           ? `Below $${band.upper_exclusive_cad! / 1000}k`
           : band.upper_exclusive_cad === null
             ? `$${band.lower_inclusive_cad / 1000}k or more`
-            : `$${band.lower_inclusive_cad / 1000}k–<${band.upper_exclusive_cad / 1000}k`;
+            : `$${band.lower_inclusive_cad / 1000}k–<$${band.upper_exclusive_cad / 1000}k`;
       const item = node("li");
       const swatch = node("span", "", "swatch");
       swatch.style.backgroundColor = colours[i];
@@ -342,6 +388,7 @@ function renderLegend(bands: Band[]) {
   );
 }
 function selectPlace(place: Place) {
+  showSelectionPanel();
   marker?.remove();
   marker = L.circleMarker([place.lat, place.lon], {
     radius: 6,
@@ -374,26 +421,27 @@ function selectPlace(place: Place) {
   }
 }
 function searchPlaces() {
-  const text = placeSearch.value.trim().toLocaleLowerCase("en-CA");
-  const matches = text
-    ? index.places.filter((p) =>
-        p.name.toLocaleLowerCase("en-CA").includes(text),
-      )
-    : [];
+  const text = placeSearch.value.trim();
+  const matches = matchingPlaces(index.places, text);
   element("place-results").replaceChildren(
     ...matches.slice(0, 10).map((place) => {
       const item = node("li");
       const button = node("button", "", "place-result");
       button.type = "button";
-      // Coordinates distinguish verified representations until final milestone-three curation.
+      // Directions compare verified source points; coordinates retain precise context.
       button.append(
         node("strong", place.name),
-        node(
-          "span",
-          `${place.lat.toFixed(4)}° N · ${Math.abs(place.lon).toFixed(4)}° W`,
-        ),
+        node("span", locationLabel(place, index.places)),
       );
       button.dataset.placeId = place.id;
+      button.append(
+        node(
+          "span",
+          place.areas.length === 1
+            ? `Census area ${place.areas[0]}`
+            : "Outside a single mapped census area",
+        ),
+      );
       button.addEventListener("click", () => selectPlace(place));
       item.append(button);
       return item;
@@ -402,7 +450,7 @@ function searchPlaces() {
   element("place-status").textContent = !text
     ? "Place locations identify a point, not a whole community."
     : !matches.length
-      ? "No place locations match this name."
+      ? "No place locations match this name. Try a nearby community or browse the census area list; some neighbourhood names are absent from the source."
       : `${matches.length} matching place locations${matches.length > 10 ? "; showing the first 10. Refine your search to see others" : ""}. Choose a location.`;
 }
 async function initialise() {
@@ -413,7 +461,7 @@ async function initialise() {
     rows = new Map(index.rows.map((r) => [r.id, r]));
     listRows = [...index.rows];
     renderList();
-    renderLegend(index.proposedBands);
+    renderLegend(index.incomeBands);
     element("total-areas").textContent = String(index.rows.length);
     filter.disabled = false;
     placeSearch.disabled = false;
@@ -450,6 +498,7 @@ async function initialise() {
       void loadVisible();
     });
     retry.addEventListener("click", () => {
+      if (selected) void selectArea(selected, false);
       void loadVisible(!document.body.dataset.usabilityReady);
     });
     performance.mark("income-index-ready");
