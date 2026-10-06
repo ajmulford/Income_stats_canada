@@ -32,7 +32,7 @@ if (
   manifest.files["income.csv"].sha256 !== reviewedRelease.income_csv_sha256
 )
   throw new Error(
-    "Data differs from the reviewed release. Review data/reviewed-release.json before building.",
+    `Data differs from the reviewed release. Geometry: ${manifest.files["income.geojson"].sha256} (expected ${reviewedRelease.income_geojson_sha256}); CSV: ${manifest.files["income.csv"].sha256} (expected ${reviewedRelease.income_csv_sha256}). Review the native build platform before changing a reviewed hash.`,
   );
 const validation = await readJSON("validation.json");
 if (validation.status !== "validated")
