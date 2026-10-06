@@ -491,6 +491,21 @@ h1 {
 }
 .area-income {
   font-weight: 600;
+  flex-shrink: 0;
+}
+.area-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.area-place {
+  color: #4d6250;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.area-row {
+  gap: 10px;
 }
 .caution-badge {
   font-size: 9px;

@@ -88,6 +88,11 @@ const layers = new Map<string, L.Path>();
 const inFlight = new Map<string, Promise<void>>();
 const loaded = new Set<string>();
 let index: Index;
+const placeNamesByArea = new Map<string, string[]>();
+function areaPlaceLabel(id: string): string {
+  const names = placeNamesByArea.get(id);
+  return names?.length ? `Contains place locations: ${names.join(", ")}` : "";
+}
 let rows: Map<string, Area>;
 let selected: string | null = null;
 let currentPage = 0;
@@ -305,6 +310,10 @@ function renderDetails(row: Area) {
   );
   const date = node("p", "2020 income · 2021 Census · CAD", "details-date");
   const pieces: HTMLElement[] = [amount, measure, date];
+  const placeLabel = areaPlaceLabel(row.id);
+  pieces.push(node("p", placeLabel || "No named place location is linked to this area in the reviewed source.", "area-location"));
+  if (placeLabel)
+    pieces.push(node("p", "These names identify points within the census area. They do not define its boundary or represent income for an entire community.", "small-note"));
   if (row.note)
     pieces.push(
       node(
@@ -423,10 +432,14 @@ function renderList() {
       button.dataset.areaId = row.id;
       button.setAttribute("aria-pressed", String(selected === row.id));
       const label = node("span", row.id, "area-id");
+      const identity = node("span", "", "area-identity");
+      identity.append(label);
+      const placeLabel = areaPlaceLabel(row.id);
+      if (placeLabel) identity.append(node("span", placeLabel, "area-place"));
       const income = node("span", rowLabel(row), "area-income");
-      const text = `Census area ${row.id}, ${rowLabel(row)}${row.caution ? ", use with caution" : ""}`;
+      const text = `Census area ${row.id}, ${rowLabel(row)}${row.caution ? ", use with caution" : ""}${placeLabel ? `, ${placeLabel}` : ""}`;
       button.setAttribute("aria-label", text);
-      button.append(label, income);
+      button.append(identity, income);
       if (row.caution) button.append(node("span", "Caution", "caution-badge"));
       button.addEventListener("click", (event) => {
         // Pointer selection reveals the selected view; keyboard selection retains list focus.
@@ -546,6 +559,15 @@ async function initialise() {
     if (new Set(index.rows.map((r) => r.id)).size !== index.rows.length)
       throw new Error("Duplicate area index.");
     rows = new Map(index.rows.map((r) => [r.id, r]));
+    placeNamesByArea.clear();
+    for (const place of index.places) {
+      if (place.areas.length !== 1 || !rows.has(place.areas[0])) continue;
+      const id = place.areas[0];
+      const names = placeNamesByArea.get(id) ?? [];
+      if (!names.includes(place.name)) names.push(place.name);
+      placeNamesByArea.set(id, names);
+    }
+    for (const names of placeNamesByArea.values()) names.sort((a, b) => a.localeCompare(b, "en-CA"));
     listRows = [...index.rows];
     renderList();
     renderLegend(index.incomeBands);

@@ -20,6 +20,37 @@ async function ready(
   );
 }
 
+test("census areas show all verified contained place names and explain missing matches", async ({ page }) => {
+  const places = JSON.parse(await readFile("data/processed/hrm/places.json", "utf8")) as {
+    name: string; containing_da_uids: string[];
+  }[];
+  const namesByArea = new Map<string, Set<string>>();
+  for (const place of places) {
+    if (place.containing_da_uids.length !== 1) continue;
+    const id = place.containing_da_uids[0];
+    const names = namesByArea.get(id) ?? new Set<string>();
+    names.add(place.name);
+    namesByArea.set(id, names);
+  }
+  const [id, names] = [...namesByArea].find(([, names]) => names.size > 1)!;
+  await ready(page);
+  await page.locator("#area-filter").fill(id);
+  const row = page.locator(`#area-list button[data-area-id="${id}"]`);
+  const label = `Contains place locations: ${[...names].sort((a, b) => a.localeCompare(b, "en-CA")).join(", ")}`;
+  await expect(row.locator(".area-place")).toHaveText(label);
+  await expect(row).toHaveAccessibleName(new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  await row.click();
+  await expect(page.locator("#details .area-location")).toHaveText(label);
+  await expect(page.locator("#details")).toContainText("They do not define its boundary");
+  await page.locator("#area-filter").fill("");
+  const ids = await page.locator("#area-list button").evaluateAll(buttons => buttons.map(button => (button as HTMLElement).dataset.areaId!));
+  const unnamed = ids.find(id => !namesByArea.has(id))!;
+  const unnamedRow = page.locator(`#area-list button[data-area-id="${unnamed}"]`);
+  await expect(unnamedRow.locator(".area-place")).toHaveCount(0);
+  await unnamedRow.click();
+  await expect(page.locator("#details .area-location")).toHaveText("No named place location is linked to this area in the reviewed source.");
+});
+
 test("real map click and accessible list select the same published area", async ({
   page,
 }) => {
@@ -451,7 +482,7 @@ for (const width of [390, 768, 1280, 1920]) {
     await expect(page.getByRole("button", { name: "Zoom out", exact: true })).toHaveAttribute("aria-disabled", "false");
     // The retained offshore area can still be selected and navigated to.
     await page.getByRole("searchbox", {name: "Filter census areas by identifier"}).fill("12090845");
-    await page.getByRole("button", {name: "Census area 12090845, Income unavailable",exact: true}).click();
+    await page.getByRole("button", {name: /^Census area 12090845, Income unavailable/}).click();
     await expect(page.getByRole("heading", {name:"Census area 12090845"})).toBeVisible();
   });
 }
