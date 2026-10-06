@@ -1,5 +1,5 @@
 {
-  "candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
+  "candidate_sha256": "72e0f6d027bc4cb686f3867eeadc015e7e47f53514b5a99b90a9c23357a3cf5a",
   "checks": [
     {
       "name": "physical_phone",
@@ -7,7 +7,7 @@
       "environment": "Google Pixel 9; Android (tester reports latest version); Chrome",
       "tester": "Alex",
       "tested_at": "2026-10-06",
-      "notes": "Alex confirmed this check passed on October 6, 2026, with no changes needed. Android/Chrome version numbers and exact test time were not recorded. Evidence recorded from tester report."
+      "notes": "Alex confirmed this check passed on October 6, 2026, with no changes needed. Android/Chrome version numbers and exact test time were not recorded. Evidence recorded from tester report. Carried forward to this visual-only update under Alex\u2019s explicit publication instruction; these physical checks were performed on the previous candidate, not repeated on this candidate. See manual_evidence_disposition."
     },
     {
       "name": "screen_reader",
@@ -15,7 +15,14 @@
       "environment": "Google Pixel 9; Android (tester reports latest version); Chrome; TalkBack",
       "tester": "Alex",
       "tested_at": "2026-10-06",
-      "notes": "Alex confirmed this check passed on October 6, 2026, with no changes needed. Android/Chrome version numbers and exact test time were not recorded. Evidence recorded from tester report."
+      "notes": "Alex confirmed this check passed on October 6, 2026, with no changes needed. Android/Chrome version numbers and exact test time were not recorded. Evidence recorded from tester report. Carried forward to this visual-only update under Alex\u2019s explicit publication instruction; these physical checks were performed on the previous candidate, not repeated on this candidate. See manual_evidence_disposition."
     }
-  ]
+  ],
+  "manual_evidence_disposition": {
+    "type": "visual_only_carry_forward",
+    "previously_tested_candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
+    "change": "Income fill opacity reduced from 0.83 to 0.45; selection, labels, navigation, data, and accessibility markup unchanged.",
+    "authorization": "Alex explicitly requested publication of this visual-only update.",
+    "new_physical_checks_performed": false
+  }
 }

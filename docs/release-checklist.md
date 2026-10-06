@@ -48,7 +48,7 @@ If any step fails, record it and fix the issue before passing the check. Combini
 
 ## Record evidence and measure
 
-Copy `candidate_sha256` from [reports/release-candidate.json](../reports/release-candidate.json) into [release/verification.json](../release/verification.json). Fill each applicable entry's environment, tester, ISO date/time, and notes, then set `status` to `passed` only after doing the check. Any built content/data change invalidates the candidate fingerprint and requires rechecking that candidate.
+Copy `candidate_sha256` from [reports/release-candidate.json](../reports/release-candidate.json) into [release/verification.json](../release/verification.json). Fill each applicable entry's environment, tester, ISO date/time, and notes, then set `status` to `passed` only after doing the check. Any built content/data change invalidates the candidate fingerprint and normally requires rechecking that candidate. For the October 6 opacity-only update, Alex explicitly requested publication after the visual adjustment. Prior manual results are carried forward with their original tested candidate recorded in `manual_evidence_disposition`; they do not claim a new physical-device test. Fresh automated browser and performance checks still apply. This documented exception does not cover data, interaction, or accessibility changes.
 
 With production preview running on port 4173, record three cold-cache runs and the full-geometry baseline:
 

@@ -81,7 +81,8 @@ function style(id: string): L.PathOptions {
       row.income === null
         ? "#d8d8d3"
         : colours[bandIndex(row.income, index.incomeBands)],
-    fillOpacity: 0.83,
+    // Let street lines and labels remain readable beneath the income shading.
+    fillOpacity: 0.45,
     color: selected === id ? "#101f1d" : "#f8faf5",
     weight: selected === id ? 3 : 0.65,
     opacity: selected === id ? 1 : 0.75,
