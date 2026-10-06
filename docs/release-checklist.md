@@ -61,12 +61,12 @@ The measurement binds its evidence to the candidate fingerprint and source hash;
 
 ## GitHub setup and release
 
-The intended host is a **public** GitHub repository, using standard Ubuntu runners and GitHub Pages. The configured remote is the public repository `ajmulford/Income_stats_canada`. Do not infer the publishing account from whichever CLI account happens to be active.
+The intended host is a **public** GitHub repository, using standard macOS/ARM verification runners, Ubuntu deployment runners, and GitHub Pages. The configured remote is the public repository `ajmulford/Income_stats_canada`. Do not infer the publishing account from whichever CLI account happens to be active.
 
 1. Push the reviewed source and evidence to the selected public repository.
-2. In Settings → Pages, select **GitHub Actions** as the source. Keep the `github-pages` environment restricted to the default branch.
+2. Pages is configured with **GitHub Actions** as the source, and the `github-pages` environment is restricted to `main`. Keep that default-branch restriction in place.
 3. Run **Reviewed GitHub Pages release** with `publish` left false. It rebuilds the pinned inputs, tests three engines, and retains an exact candidate for one day without publishing.
-4. Compare that candidate with the locally tested fingerprint. A mismatch blocks publication and needs investigation/reverification. A changed live official source also fails closed; restore the exact reviewed snapshot or review a new source lock. Source caches are an optimization, not durable archival storage.
+4. Compare that candidate with the locally tested fingerprint. A mismatch blocks publication and needs investigation/reverification. A changed live official source also fails closed; restore the exact reviewed snapshot or review a new source lock. Exact reviewed ancillary responses are bundled in `data/source-snapshots/`; the large census archives still download against their locked hashes. Source caches are an optimization, not durable archival storage.
 5. After required checks pass, run the same workflow with `publish` true on the default branch. Publication requires a public repository and exact candidate evidence. It stamps the actual America/Halifax release date, publishes `dist/` only, then checks hosted HTML/assets/index/CSV against the deployed manifest.
 6. Open the real project URL, repeat a resident selection and download, and rerun the mobile measurement with `PREVIEW_URL=https://OWNER.github.io/REPOSITORY` and a separate `REPORT_PATH=reports/mobile-performance-hosted.json`. Record response compression and the live result; local preview performance does not certify the host.
 

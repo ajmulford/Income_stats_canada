@@ -1,6 +1,6 @@
 # Milestone four: verify and release
 
-Status on October 6, 2026: **release implementation and local automated checks are ready; publication remains pending**. The remote points to the public repository `ajmulford/Income_stats_canada`; publication workflows are now included in the reviewed configuration. No hosted CI run or Pages deployment has occurred, and actual physical-phone/screen-reader checks are not recorded. This milestone is not marked complete while those launch criteria remain outstanding.
+Status on October 6, 2026: **release implementation and local automated checks are ready; publication remains pending**. The remote points to the public repository `ajmulford/Income_stats_canada`; publication workflows are now included in the reviewed configuration. GitHub validation passed with an exact match to the locally tested candidate. Pages is configured for Actions with deployment restricted to `main`; no site has been deployed, and actual physical-phone/screen-reader checks are not recorded. This milestone is not marked complete while those launch criteria remain outstanding.
 
 ## Prepared release implementation
 
@@ -21,7 +21,7 @@ See [publication decision](adr/0004-reviewed-publication.md) and the concrete [m
 | Check | Result |
 | --- | --- |
 | Official cached input checksum verification and fresh data rebuild | Passed; 604 areas, 599 published, five suppressed |
-| Python regression checks | 20 passed |
+| Python regression checks | 22 passed |
 | Production build and exact delivery audit | Passed |
 | Resident scenarios | 15 per engine, 45 passed total |
 | Engines | Installed Chrome 154, Playwright Firefox 155, Playwright WebKit 26.6 on macOS |
@@ -30,7 +30,8 @@ See [publication decision](adr/0004-reviewed-publication.md) and the concrete [m
 | Workflow syntax | Passed with actionlint 1.7.12; ShellCheck was not run |
 | Served artifact/CSV smoke check | Passed on local production preview |
 | Physical phone and actual screen reader | Pending |
-| Linux GitHub-hosted build and Pages deployment | Pending |
+| GitHub-hosted macOS/ARM verification | Passed; exact local candidate match, 22 Python tests, six release-gate tests, 45 browser checks |
+| Pages deployment | Pending manual launch checks |
 | Hosted compression/performance and real URL verification | Pending |
 
 The browser suite includes source-value map/list agreement, suppression, duplicate/uncontained places, rural Sheet Harbour selection, full-HRM coverage, keyboard/mobile panel interaction, original CSV download, failed tiles/geometry, both gzip transports and plain JSON, exact band edges, and project-subdirectory hosting. All automatic tile requests are intercepted or disabled; no OSM tiles are scraped for tests.
@@ -51,10 +52,9 @@ OSM standard tiles provide best-effort availability without a service guarantee.
 
 ## Remaining steps to complete the milestone
 
-1. Run the validation-only workflow on the public `ajmulford/Income_stats_canada` repository and record its result.
-2. Perform the physical-phone and actual screen-reader scenarios in [the checklist](release-checklist.md). Complete [release/verification.json](../release/verification.json) with honest device/browser, tester, timestamp, findings, and the exact candidate identity. Resolve any failures and reverify changed content.
-3. Verify that the Linux-built candidate matches the locally tested content. Platform/source differences fail closed and require investigation rather than silent approval.
-4. Enable GitHub Actions as the Pages source and run the gated publication workflow. Record the actual URL/date/commit and verify the deployed artifact and cold-cache hosted performance before announcing the release.
+1. Perform the physical-phone and actual screen-reader scenarios in [the checklist](release-checklist.md). Complete [release/verification.json](../release/verification.json) with honest device/browser, tester, timestamp, findings, and the exact candidate identity. Resolve any failures and reverify changed content.
+2. Keep the GitHub-built candidate identical to the manually tested content. Platform/source differences fail closed and require investigation rather than silent approval.
+3. Run the gated publication workflow on the configured GitHub Actions Pages source. Record the actual URL/date/commit and verify the deployed artifact and cold-cache hosted performance before announcing the release.
 
 The user authorized making the repository public and committing/pushing the outstanding release configuration. The user configured the remote and pushed the committed application. This follow-up made the repository public with explicit authorization, using the owner’s existing authentication. The site remains unpublished while manual launch checks are pending.
 
@@ -64,4 +64,8 @@ The repository was made public and the missing workflow configuration committed/
 
 The first Linux run ([37516843867](https://github.com/ajmulford/Income_stats_canada/actions/runs/37516843867)) correctly rejected changed ArcGIS item metadata. Comparison with the reviewed response showed only `lastViewed` and `numViews` differences; the income and boundary archive downloads matched their locks. The SDMX metadata snapshot also contains its response-preparation timestamp. The fix retains exact reviewed ancillary inputs in the 3.1 MB compressed `data/source-snapshots/` bundle and restores them only after original SHA-256 verification. No source lock, income value, geography, or checksum requirement was relaxed. Large census archives remain outside Git and the published site.
 
-The next Linux build passed all census/geography checks and 22 Python tests but failed the exact reviewed-output hash gate. Verification is being checked on standard `macos-26` ARM runners, matching the original native GDAL/PROJ platform; deployment remains on Ubuntu. Output hashes remain unchanged and enforced. Failed-run artifacts retain rebuilt income/geometry for investigation rather than silently accepting different bytes.
+The next Linux build passed all census/geography checks and 22 Python tests but failed the exact reviewed-output hash gate. Verification passed on standard `macos-26` ARM runners, matching the original native GDAL/PROJ platform; deployment remains on Ubuntu. Output hashes remain unchanged and enforced. Failed-run artifacts retain rebuilt income/geometry for investigation rather than silently accepting different bytes.
+
+The successful [GitHub verification run](https://github.com/ajmulford/Income_stats_canada/actions/runs/37518592636) checked commit `ab57c84ff992fadefd5ec49d98334c9db225950e`. Its audited candidate is `2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b`, identical to the local candidate and performance evidence identity. All 45 browser checks passed on the hosted runner.
+
+The [verification-only release run](https://github.com/ajmulford/Income_stats_canada/actions/runs/37519102706) also passed. Publication was disabled. The retained candidate was downloaded and every served file checked against its manifest; its fingerprint matches the local candidate exactly.

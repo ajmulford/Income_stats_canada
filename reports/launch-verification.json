@@ -6,7 +6,7 @@
     "reviewed_data_rebuild": "passed",
     "python_tests": {
       "status": "passed",
-      "count": 20
+      "count": 22
     },
     "browser_tests": {
       "status": "passed",
@@ -30,15 +30,30 @@
     },
     "physical_phone": "pending",
     "actual_screen_reader": "pending",
-    "github_ci_execution": "pending",
+    "github_ci_execution": {
+      "status": "passed",
+      "run_id": 37518592636,
+      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37518592636",
+      "commit": "ab57c84ff992fadefd5ec49d98334c9db225950e",
+      "runner": "macos-26 (ARM)",
+      "candidate_matches_local": true
+    },
     "github_pages_deployment": "pending",
-    "hosted_performance": "pending"
+    "hosted_performance": "pending",
+    "release_workflow_dry_run": {
+      "status": "passed",
+      "run_id": 37519102706,
+      "url": "https://github.com/ajmulford/Income_stats_canada/actions/runs/37519102706",
+      "publish": false,
+      "retained_artifact_hashes": "passed",
+      "candidate_matches_local": true
+    }
   },
   "hosting": {
     "site_bytes_excluding_release_manifest": 20745033,
     "pages_limit_bytes": 1000000000,
     "monthly_target_cad": 0,
-    "cost_assumptions": "Public repository, standard runners, free Pages domain, default cache limit, artifact storage within free allowance; account settings not yet verified"
+    "cost_assumptions": "Public repository, standard macOS/ARM verification and Ubuntu deployment runners, free Pages domain, default cache limit, artifact storage within free allowance; account-wide budgets and other usage not inspected"
   },
   "publication_blockers": [
     "Required physical-phone and screen-reader checks not completed"
@@ -46,7 +61,9 @@
   "repository": {
     "name": "ajmulford/Income_stats_canada",
     "visibility": "public",
-    "pages_enabled": false,
-    "workflows_uploaded": true
+    "pages_enabled": true,
+    "workflows_uploaded": true,
+    "pages_build_type": "workflow",
+    "deployment_branch": "main"
   }
 }
