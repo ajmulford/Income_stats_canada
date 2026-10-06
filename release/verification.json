@@ -1,5 +1,5 @@
 {
-  "candidate_sha256": "5ca22848313b271f6027f21c53233f6770dab7ef40901276b6d51251f2e456f6",
+  "candidate_sha256": "a21f2b73221f0af92f5c4c9b4f8566bd14701116d3aad62fcc02528683ff9cff",
   "checks": [
     {
       "name": "physical_phone",
@@ -19,11 +19,11 @@
     }
   ],
   "manual_evidence_disposition": {
-    "type": "user_approved_selection_and_sort_update",
+    "type": "user_approved_place_labels_and_map_selection_update",
     "previously_tested_candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
-    "change": "Mobile and desktop selection reveal map/details, desktop details stay open, census list sorting, and place suggestions share viewport handling.",
-    "authorization": "Alex confirmed the fixes and explicitly requested commit and deployment.",
+    "change": "Verified and approximate place labels use Near or part of; map clicks reveal off-screen details independently of navigation.",
+    "authorization": "Alex confirmed the map-click fix works and explicitly requested commit and deployment, following review of the place-label updates.",
     "new_physical_checks_performed": false,
-    "automated_verification": "93 browser checks across Chromium, Firefox and WebKit."
+    "automated_verification": "102 browser checks across Chromium, Firefox and WebKit; seven release-gate tests; fresh candidate-bound mobile measurements."
   }
 }
