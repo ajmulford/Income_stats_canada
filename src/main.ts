@@ -79,6 +79,10 @@ map.attributionControl.setPosition("topright");
 map.attributionControl.addAttribution(
   '<a href="https://www150.statcan.gc.ca/n1/en/catalogue/98-401-X2021006">Statistics Canada, 2021 Census</a>',
 );
+const incomeOverlay = L.layerGroup().addTo(map);
+let incomeOpacity = 0.45;
+const overlayToggle = element<HTMLInputElement>("show-income");
+const opacityControl = element<HTMLInputElement>("income-opacity");
 const layers = new Map<string, L.Path>();
 const inFlight = new Map<string, Promise<void>>();
 const loaded = new Set<string>();
@@ -105,12 +109,26 @@ function style(id: string): L.PathOptions {
         ? "#d8d8d3"
         : colours[bandIndex(row.income, index.incomeBands)],
     // Let street lines and labels remain readable beneath the income shading.
-    fillOpacity: 0.45,
+    fillOpacity: incomeOpacity,
     color: selected === id ? "#101f1d" : "#f8faf5",
     weight: selected === id ? 3 : 0.65,
     opacity: selected === id ? 1 : 0.75,
   };
 }
+overlayToggle.addEventListener("change", () => {
+  if (overlayToggle.checked) {
+    incomeOverlay.addTo(map);
+    if (selected) layers.get(selected)?.bringToFront();
+  }
+  else incomeOverlay.remove();
+  opacityControl.disabled = !overlayToggle.checked;
+});
+opacityControl.addEventListener("input", () => {
+  incomeOpacity = Number(opacityControl.value) / 100;
+  element("opacity-value").textContent = `${opacityControl.value}%`;
+  opacityControl.setAttribute("aria-valuetext", `${opacityControl.value} percent`);
+  for (const [id, layer] of layers) layer.setStyle(style(id));
+});
 function leafletBounds(b: Bounds) {
   return L.latLngBounds([b[1], b[0]], [b[3], b[2]]);
 }
@@ -144,7 +162,7 @@ async function loadChunk(chunk: Chunk): Promise<void> {
           void selectArea(id, false);
         });
       },
-    }).addTo(map);
+    }).addTo(incomeOverlay);
     loaded.add(chunk.file);
     document.body.dataset.loadedAreas = String(layers.size);
   })();
@@ -332,7 +350,7 @@ async function selectArea(id: string, navigate: boolean) {
     if (selected !== id) return;
     const layer = layers.get(id) as L.Polygon;
     layer.setStyle(style(id));
-    layer.bringToFront();
+    if (map.hasLayer(layer)) layer.bringToFront();
     if (navigate)
       map.fitBounds(layer.getBounds(), {
         padding: [30, 30],

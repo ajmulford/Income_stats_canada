@@ -455,3 +455,46 @@ for (const width of [390, 768, 1280, 1920]) {
     await expect(page.getByRole("heading", {name:"Census area 12090845"})).toBeVisible();
   });
 }
+
+
+test("income overlay toggles completely and opacity remains adjustable after navigation", async ({ page }) => {
+  await ready(page);
+  const toggle = page.getByRole("checkbox", {name: "Show income data"});
+  const slider = page.getByRole("slider", {name: "Colour opacity"});
+  const canvas = page.locator("#map canvas").first();
+  const ink = () => canvas.evaluate((element) => {
+    const c = element as HTMLCanvasElement;
+    const data = c.getContext("2d")!.getImageData(0,0,c.width,c.height).data;
+    return data.reduce((sum, value) => sum + value, 0);
+  });
+  await expect(toggle).toBeChecked();
+  await expect(slider).toHaveValue("45");
+  await expect.poll(ink).toBeGreaterThan(0);
+  const original = await ink();
+  await slider.focus();
+  await page.keyboard.press("End");
+  await expect(slider).toHaveValue("100");
+  await expect(page.locator("#opacity-value")).toHaveText("100%");
+  await expect.poll(ink).not.toBe(original);
+  await toggle.uncheck();
+  await expect(slider).toBeDisabled();
+  await expect.poll(ink).toBe(0);
+  await page.getByRole("button", {name:"Show all HRM"}).click();
+  await expect(page.locator("body")).toHaveAttribute("data-map-state", "ready");
+  await expect.poll(ink).toBe(0);
+  await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill("12090312");
+  await page.getByRole("button", {name:"Census area 12090312, $50,800",exact:true}).click();
+  await expect(page.locator("#details .income-value")).toHaveText("$50,800");
+  await expect.poll(ink).toBe(0);
+  await toggle.check();
+  await expect(slider).toBeEnabled();
+  await expect(slider).toHaveValue("100");
+  await expect.poll(ink).toBeGreaterThan(0);
+  await expect(page.locator("#details .income-value")).toHaveText("$50,800");
+  await slider.focus();
+  await page.keyboard.press("Home");
+  await expect(slider).toHaveValue("0");
+  await expect(page.locator("#opacity-value")).toHaveText("0%");
+  const audit = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+  expect(audit.violations).toEqual([]);
+});

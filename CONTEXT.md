@@ -96,3 +96,5 @@ A source quality flag applicable to a published income value that calls for caut
 
 - Initial navigation uses the reviewed GeoSuite place points because the current civic-community inventory does not certify per-feature boundary finality. Duplicate names remain distinct choices; uncontained points receive no income. See [navigation decision](docs/adr/0002-place-point-navigation.md).
 - No verified alternate-name aliases are present in the reviewed place inventory. Typographical normalization supports case, accent, whitespace, and punctuation variations without inventing name equivalences.
+
+- Map presentation controls let residents hide/show the income overlay and choose colour opacity from 0–100% (default 45%). Hiding removes income polygons and their map click targets while retaining census-list selection, income details, and CSV access. The opacity setting is retained when toggling or navigating within the page; refresh restores the default. These controls change presentation only.
