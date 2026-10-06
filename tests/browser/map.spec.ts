@@ -604,3 +604,25 @@ test("phone sort control stays reachable above expanded details", async ({page})
   await expect(sort).toBeFocused();
   await expect(page.locator("#details .income-value")).toHaveText("$50,800");
 });
+
+
+for (const viewport of [{width:1280,height:900}, {width:390,height:844}]) {
+  test(`place suggestion reveals both map and details at ${viewport.width}`, async ({page}) => {
+    await page.setViewportSize(viewport);
+    await ready(page);
+    await page.getByRole("searchbox", {name:"Community or place name"}).fill("Sheet Harbour");
+    await page.locator("#place-results button").first().click();
+    await expect(page.locator("#details .income-value")).toBeVisible();
+    await expect.poll(async () => {
+      const map = (await page.locator("#map").boundingBox())!;
+      const details = (await page.locator("#details-title").boundingBox())!;
+      const panel = (await page.locator("#selection-panel").boundingBox())!;
+      return map.y >= 0 && map.y < viewport.height && details.y >= 0 && details.y < viewport.height
+        && (viewport.width > 760 || map.y + map.height <= panel.y);
+    }).toBe(true);
+    await expect(page.locator(viewport.width > 760 ? "#details-title" : "#map")).toBeFocused();
+    await page.getByRole("searchbox", {name:"Community or place name"}).fill("Terence Bay");
+    await page.locator("#place-results button").filter({hasText:"Outside a single mapped census area"}).click();
+    await expect(page.getByRole("heading", {name:"No containing census area"})).toBeVisible();
+  });
+}

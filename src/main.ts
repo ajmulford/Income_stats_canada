@@ -338,6 +338,25 @@ function renderDetails(row: Area) {
   pieces.push(source);
   content.replaceChildren(...pieces);
 }
+function revealSelectedView() {
+  const phone = matchMedia("(max-width: 760px)").matches;
+  if (phone) {
+    map.getContainer().focus({ preventScroll: true });
+    window.scrollBy({
+      top: map.getContainer().getBoundingClientRect().top - 8,
+      behavior: "instant",
+    });
+  }
+  if (!phone) {
+    const heading = element("details-title");
+    heading.tabIndex = -1;
+    heading.focus({ preventScroll: true });
+    window.scrollBy({
+      top: element("selection-panel").getBoundingClientRect().top - 16,
+      behavior: "instant",
+    });
+  }
+}
 async function selectArea(id: string, navigate: boolean, revealMap = false) {
   const row = rows.get(id);
   if (!row) return;
@@ -361,23 +380,7 @@ async function selectArea(id: string, navigate: boolean, revealMap = false) {
     layer.setStyle(style(id));
     if (map.hasLayer(layer)) layer.bringToFront();
     if (navigate) {
-      const phone = matchMedia("(max-width: 760px)").matches;
-      if (phone && revealMap) {
-        map.getContainer().focus({ preventScroll: true });
-        window.scrollBy({
-          top: map.getContainer().getBoundingClientRect().top - 8,
-          behavior: "instant",
-        });
-      }
-      if (!phone && revealMap) {
-        const heading = element("details-title");
-        heading.tabIndex = -1;
-        heading.focus({ preventScroll: true });
-        window.scrollBy({
-          top: element("selection-panel").getBoundingClientRect().top - 16,
-          behavior: "instant",
-        });
-      }
+      if (revealMap) revealSelectedView();
       map.fitBounds(layer.getBounds(), {
         padding: [30, 30],
         maxZoom: 15,
@@ -470,7 +473,7 @@ function renderLegend(bands: Band[]) {
     })(),
   );
 }
-function selectPlace(place: Place) {
+function selectPlace(place: Place, reveal = false) {
   showSelectionPanel();
   marker?.remove();
   marker = L.circleMarker([place.lat, place.lon], {
@@ -502,6 +505,7 @@ function selectPlace(place: Place) {
     );
     renderList();
   }
+  if (reveal) revealSelectedView();
 }
 function searchPlaces() {
   const text = placeSearch.value.trim();
@@ -525,7 +529,7 @@ function searchPlaces() {
             : "Outside a single mapped census area",
         ),
       );
-      button.addEventListener("click", () => selectPlace(place));
+      button.addEventListener("click", (event) => selectPlace(place, event.detail > 0));
       item.append(button);
       return item;
     }),

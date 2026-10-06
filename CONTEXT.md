@@ -106,3 +106,5 @@ A source quality flag applicable to a published income value that calls for caut
 - Desktop area details are always open, with no collapse/expand control. Collapse/expand remains available on phone layouts; switching to desktop reopens previously collapsed details.
 
 - Census-list sorting supports area number and reported income in ascending/descending order. Filtering keeps the chosen sort, changing sort returns to the first page, and income ties use area number. Unavailable incomes stay last in both income directions; sorting never changes the selected area or source values.
+
+- Pointer activation of a place suggestion uses the same map/details viewport reveal as census-list selection, while retaining the place-centred camera. Suggestions without a containing area also reveal their explanatory details. Keyboard activation preserves the initiating control focus.
