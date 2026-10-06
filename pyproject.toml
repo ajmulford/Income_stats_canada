@@ -1,0 +1,9 @@
+[project]
+name = "canadian-income-maps"
+version = "0.1.0"
+description = "Reproducible census income data for public municipal maps"
+requires-python = ">=3.12"
+dependencies = ["geopandas==1.1.3", "pypdf==6.1.1"]
+
+[tool.ruff]
+line-length = 100

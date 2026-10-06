@@ -1,0 +1,117 @@
+{
+  "snapshot_date": "2026-10-06",
+  "sources": [
+    {
+      "file": "geosuite.zip",
+      "url": "https://www12-2021.statcan.gc.ca/census-recensement/2021/geo/aip-pia/geosuite/files-fichiers/2021_92-150-X_eng.zip",
+      "sha256": "37ffd61b1c4b4c8772498d52cb96e177b5da41312cc4d22cbe2b06e1bf7f0e83",
+      "bytes": 15950366,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Statistics Canada"
+    },
+    {
+      "file": "profile-atlantic.zip",
+      "url": "https://www12-2021.statcan.gc.ca/census-recensement/2021/dp-pd/prof/details/download-telecharger/comp/GetFile.cfm?Lang=E&FILETYPE=CSV&GEONO=006_Atlantic_Atlantique",
+      "sha256": "0fc9c5c0affc1c7d5d8044a7cffe41caee09235557992bcd5684bbfb9b7ba1b9",
+      "bytes": 189830329,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Statistics Canada"
+    },
+    {
+      "file": "da-boundaries.zip",
+      "url": "https://www12-2021.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lda_000b21a_e.zip",
+      "sha256": "cb8e00a1165d8f309a62884860112944ea5acc177bb926d966b4a51fbd0c9ecb",
+      "bytes": 197042003,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Statistics Canada"
+    },
+    {
+      "file": "csd-boundaries.zip",
+      "url": "https://www12-2021.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lcsd000b21a_e.zip",
+      "sha256": "f98d955bff9a8151d002bb07c5fc50775b624d4f2f4052dbe05fe54d58f3bbe8",
+      "bytes": 155981521,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Statistics Canada"
+    },
+    {
+      "file": "community-layer.json",
+      "url": "https://services2.arcgis.com/11XBiaBYA9Ep0yNJ/arcgis/rest/services/GSA/FeatureServer/0?f=pjson",
+      "sha256": "ccf00b34ab845f6235eaa0ad1aa9d1ea4419e8bf99240dcbeb09c9d9ca922fe3",
+      "bytes": 15871,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Halifax Regional Municipality"
+    },
+    {
+      "file": "community-count.json",
+      "url": "https://services2.arcgis.com/11XBiaBYA9Ep0yNJ/arcgis/rest/services/GSA/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+      "sha256": "839d743b9362436a89880a3220b9f6e40350bf51c16e584035c6ca10b91428f7",
+      "bytes": 13,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Halifax Regional Municipality"
+    },
+    {
+      "file": "communities.geojson",
+      "url": "https://services2.arcgis.com/11XBiaBYA9Ep0yNJ/arcgis/rest/services/GSA/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson",
+      "sha256": "3df513746a836a7c4769ea3e2ebdb2b95bd871c81089ccaab57d92b54c44d232",
+      "bytes": 3584802,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Halifax Regional Municipality"
+    },
+    {
+      "file": "community-item.json",
+      "url": "https://www.arcgis.com/sharing/rest/content/items/b4088a068b794436bdb4e5c31df76fe2?f=json",
+      "sha256": "006107f3acde27ced99f04344d98d09c2cb03aadacdd0154d71d2552509c535b",
+      "bytes": 3094,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Halifax Regional Municipality"
+    },
+    {
+      "file": "hrm-community-metadata.pdf",
+      "url": "https://www.halifax.ca/sites/default/files/documents/home/open-data/ODMT_Community_Boundaries.pdf",
+      "sha256": "ec90780e50dc3205c824bbf06d5945b404e299298c2352dc82a445ba09925708",
+      "bytes": 190663,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Halifax Regional Municipality"
+    },
+    {
+      "file": "geosuite-guide.html",
+      "url": "https://www150.statcan.gc.ca/n1/pub/92-150-g/92-150-g2021001-eng.htm",
+      "sha256": "8c5248e4b02312773e9132690a4226e46077b11f1edbf7760ffe2a0f61df73ca",
+      "bytes": 43441,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Statistics Canada"
+    },
+    {
+      "file": "hrm-license.html",
+      "url": "https://data-hrm.hub.arcgis.com/pages/open-data-licence",
+      "sha256": "f01eb1847469aa63a4f18358b11944620874760fab0f0f0839702e6388bf1c24",
+      "bytes": 67318,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Halifax Regional Municipality"
+    },
+    {
+      "file": "statcan-license.html",
+      "url": "https://www.statcan.gc.ca/en/reference/licence",
+      "sha256": "a04da0cf3f96b887bad16cb68d469789d3fd4c4b9e2f56d644653ed81dfea46c",
+      "bytes": 27005,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Statistics Canada"
+    },
+    {
+      "file": "sample-api-metadata.xml",
+      "url": "https://api.statcan.gc.ca/census-recensement/profile/sdmx/rest/dataflow/STC_CP/DF_DA?references=all",
+      "sha256": "bac0729aaa22943f1b43200562ad0ff29e40995f900d75dd16c9e1af1ded53ac",
+      "bytes": 44624120,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Statistics Canada"
+    },
+    {
+      "file": "profile-samples.csv",
+      "url": "https://api.statcan.gc.ca/census-recensement/profile/sdmx/rest/data/STC_CP,DF_DA,1.3/A5.2021S051212090985+2021S051212090963+2021S051212090294+2021S051212090104+2021S051212090591+2021S051212090204.1.229.1?format=csv",
+      "sha256": "71ae2fc30176cbdf23c16a9e779ca52be1f51a4f53dc787f4dec95fd073c2fcb",
+      "bytes": 952,
+      "retrieved_date": "2026-10-06",
+      "publisher": "Statistics Canada"
+    }
+  ]
+}
