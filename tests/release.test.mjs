@@ -106,3 +106,25 @@ test("stale mobile evidence blocks release", async (t) => {
   assert.notEqual(r.status, 0);
   assert.match(r.stderr, /mobile performance/);
 });
+
+// Exercise the real publication transformation, including the reviewed footer.
+test("publication stamps the reviewed preview without changing candidate identity", async (t) => {
+  const { dir, evidence } = await fixture(t);
+  const git = (...args) => spawnSync("git", args, { cwd: dir, encoding: "utf8" });
+  assert.equal(git("init").status, 0);
+  assert.equal(git("-c", "user.name=Release test", "-c", "user.email=release-test@example.invalid", "commit", "--allow-empty", "-m", "fixture").status, 0);
+  const r = spawnSync(process.execPath, [script, "audit"], {
+    cwd: dir,
+    encoding: "utf8",
+    env: { ...process.env, RELEASE_DATE: "2026-10-06" },
+  });
+  assert.equal(r.status, 0, r.stderr);
+  const html = await readFile(join(dir, "dist/index.html"), "utf8");
+  assert.match(html, /id="publication-status">Published/);
+  assert.match(html, /id="release-status">Released 2026-10-06/);
+  assert.doesNotMatch(html, /not yet\s*published/);
+  const published = JSON.parse(await readFile(join(dir, "dist/release.json"), "utf8"));
+  assert.equal(published.candidate_sha256, evidence.candidate_sha256);
+  assert.notEqual(published.content_sha256, evidence.candidate_sha256);
+  assert.equal(published.release_date, "2026-10-06");
+});

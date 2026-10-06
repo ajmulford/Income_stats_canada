@@ -111,22 +111,28 @@ if (process.argv[2] === "check") {
     await check(c);
     const path = "dist/index.html";
     const html = await readFile(path, "utf8");
+    // The reviewed preview footer predates the release-status span. Match its
+    // existing text without changing the candidate that received launch checks.
+    const footer = /Reviewed data snapshot: October 6, 2026\.\s*Preview — not yet\s*published\./g;
+    const hasReleaseSpan = html.includes('id="release-status"');
     if (
-      !html.includes('id="release-status"') ||
-      !html.includes('id="publication-status"')
+      !html.includes('id="publication-status"') ||
+      (!hasReleaseSpan && [...html.matchAll(footer)].length !== 1)
     )
       throw new Error("Missing release labels.");
+    const releaseLabel = `Released ${releaseDate} · ${reviewed.release_id}`;
+    const stamped = hasReleaseSpan
+      ? html.replace(
+          /(<span id="release-status">)[\s\S]*?(<\/span>)/,
+          `$1${releaseLabel}$2`,
+        )
+      : html.replace(footer, `Reviewed data snapshot: October 6, 2026. <span id="release-status">${releaseLabel}</span>`);
     await writeFile(
       path,
-      html
-        .replace(
-          /(<span id="release-status">)[\s\S]*?(<\/span>)/,
-          `$1Released ${releaseDate} · ${reviewed.release_id}$2`,
-        )
-        .replace(
-          /(<span id="publication-status">)[\s\S]*?(<\/span>)/,
-          "$1Published$2",
-        ),
+      stamped.replace(
+        /(<span id="publication-status">)[\s\S]*?(<\/span>)/,
+        "$1Published$2",
+      ),
     );
   }
   const files = await inventory();
