@@ -1,0 +1,466 @@
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "./style.css";
+import {
+  bandIndex,
+  colours,
+  dataURL,
+  dollars,
+  intersects,
+  loadJSON,
+} from "./data";
+import type {
+  Area,
+  AreasGeoJSON,
+  Band,
+  Bounds,
+  Chunk,
+  Index,
+  Place,
+} from "./data";
+
+const element = <T extends HTMLElement>(id: string) => {
+  const result = document.getElementById(id);
+  if (!result) throw new Error(`Missing element: ${id}`);
+  return result as T;
+};
+function node<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  text = "",
+  className = "",
+) {
+  const result = document.createElement(tag);
+  result.textContent = text;
+  result.className = className;
+  return result;
+}
+const status = element("map-status");
+const list = element("area-list");
+const filter = element<HTMLInputElement>("area-filter");
+const placeSearch = element<HTMLInputElement>("place-search");
+const previous = element<HTMLButtonElement>("previous-page");
+const next = element<HTMLButtonElement>("next-page");
+const retry = element<HTMLButtonElement>("retry-map");
+const map = L.map("map", {
+  preferCanvas: true,
+  minZoom: 8,
+  maxZoom: 18,
+  zoomControl: false,
+  zoomAnimation: false,
+  fadeAnimation: false,
+  markerZoomAnimation: false,
+}).setView([44.664, -63.589], 13);
+L.control.zoom({ position: "bottomright" }).addTo(map);
+map.attributionControl.addAttribution(
+  '<a href="https://www150.statcan.gc.ca/n1/en/catalogue/98-401-X2021006">Statistics Canada, 2021 Census</a>',
+);
+const layers = new Map<string, L.Path>();
+const inFlight = new Map<string, Promise<void>>();
+const loaded = new Set<string>();
+let index: Index;
+let rows: Map<string, Area>;
+let selected: string | null = null;
+let currentPage = 0;
+let listRows: Area[] = [];
+let marker: L.CircleMarker | null = null;
+let loadingGeneration = 0;
+let tileLayer: L.TileLayer | null = null;
+const PAGE_SIZE = 30;
+const query = new URLSearchParams(location.search);
+const baseline = query.get("geometry") === "all";
+
+function rowLabel(row: Area) {
+  return row.income === null ? "Income unavailable" : dollars(row.income);
+}
+function style(id: string): L.PathOptions {
+  const row = rows.get(id)!;
+  return {
+    fillColor:
+      row.income === null
+        ? "#d8d8d3"
+        : colours[bandIndex(row.income, index.proposedBands)],
+    fillOpacity: 0.83,
+    color: selected === id ? "#101f1d" : "#f8faf5",
+    weight: selected === id ? 3 : 0.65,
+    opacity: selected === id ? 1 : 0.75,
+  };
+}
+function leafletBounds(b: Bounds) {
+  return L.latLngBounds([b[1], b[0]], [b[3], b[2]]);
+}
+function mapBounds(): Bounds {
+  const b = map.getBounds();
+  return [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
+}
+async function loadChunk(chunk: Chunk): Promise<void> {
+  if (loaded.has(chunk.file)) return;
+  const pending = inFlight.get(chunk.file);
+  if (pending) return pending;
+  const task = (async () => {
+    const collection = await loadJSON<AreasGeoJSON>(chunk.file);
+    const expected = new Set(chunk.ids);
+    if (
+      collection.features.length !== expected.size ||
+      new Set(collection.features.map((f) => f.properties.id)).size !==
+        expected.size ||
+      collection.features.some(
+        (f) => !expected.has(f.properties.id) || !rows.has(f.properties.id),
+      )
+    ) {
+      throw new Error("Geometry does not match the validated area index.");
+    }
+    L.geoJSON(collection, {
+      style: (feature) => style(feature!.properties.id),
+      onEachFeature: (feature, layer) => {
+        const id = feature.properties.id;
+        layers.set(id, layer as L.Path);
+        layer.on("click", () => {
+          void selectArea(id, false);
+        });
+      },
+    }).addTo(map);
+    loaded.add(chunk.file);
+  })();
+  inFlight.set(chunk.file, task);
+  try {
+    await task;
+  } finally {
+    inFlight.delete(chunk.file);
+  }
+}
+async function loadVisible(initial = false): Promise<void> {
+  if (!index) return;
+  const generation = ++loadingGeneration;
+  retry.hidden = true;
+  status.textContent = "Loading census areas…";
+  status.hidden = false;
+  try {
+    const chunks = baseline
+      ? [
+          {
+            file: "all-areas.json",
+            ids: index.rows.map((r) => r.id),
+            bbox: index.bounds,
+          },
+        ]
+      : index.chunks.filter((c) => intersects(c.bbox, mapBounds()));
+    // Browsers schedule these static requests; each is an independently retryable chunk.
+    await Promise.all(chunks.map(loadChunk));
+    if (generation === loadingGeneration) {
+      status.textContent = "Census areas ready";
+      status.hidden = true;
+      document.body.dataset.mapState = "ready";
+    }
+    if (initial && !document.body.dataset.usabilityReady) {
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+      performance.mark("income-map-usable");
+      document.body.dataset.usabilityReady = "true";
+      enableBasemap();
+    }
+  } catch (error) {
+    console.error(error);
+    if (generation === loadingGeneration) {
+      document.body.dataset.mapState = "error";
+      status.textContent =
+        "Some census areas could not load. The income list and CSV remain available.";
+      retry.hidden = false;
+    }
+  }
+}
+function enableBasemap() {
+  const message = element("basemap-status");
+  if (query.get("basemap") === "off") {
+    message.textContent =
+      "Street map is off. Income areas and place locations remain available.";
+    message.hidden = false;
+    return;
+  }
+  if (tileLayer) return;
+  let errors = 0;
+  tileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+  }).addTo(map);
+  tileLayer.on("tileerror", () => {
+    if (++errors >= 2) {
+      message.hidden = false;
+      tileLayer?.remove();
+    }
+  });
+}
+function renderDetails(row: Area) {
+  element("details-title").textContent = `Census area ${row.id}`;
+  const content = element("details");
+  const amount = node(
+    "p",
+    rowLabel(row),
+    row.income === null ? "income-value unavailable" : "income-value",
+  );
+  const measure = node(
+    "p",
+    "Median before-tax household income",
+    "measure-label",
+  );
+  const date = node("p", "2020 income · 2021 Census", "details-date");
+  const pieces: HTMLElement[] = [amount, measure, date];
+  if (row.note)
+    pieces.push(
+      node(
+        "p",
+        row.note,
+        row.income === null ? "data-notice" : "data-notice caution",
+      ),
+    );
+  if (row.caution && !row.note)
+    pieces.push(
+      node("p", "Use this reported value with caution.", "data-notice caution"),
+    );
+  pieces.push(
+    node(
+      "p",
+      "This statistic describes households across the census area, not an individual home.",
+      "small-note",
+    ),
+  );
+  pieces.push(
+    node(
+      "p",
+      "Household totals are not adjusted for household size, taxes, or living costs.",
+      "small-note",
+    ),
+  );
+  const source = node("a", "View the official source ↗", "source-link");
+  source.href = row.source;
+  source.target = "_blank";
+  source.rel = "noopener";
+  pieces.push(source);
+  content.replaceChildren(...pieces);
+}
+async function selectArea(id: string, navigate: boolean) {
+  const row = rows.get(id);
+  if (!row) return;
+  const before = selected;
+  selected = id;
+  if (before) layers.get(before)?.setStyle(style(before));
+  renderDetails(row);
+  renderList();
+  const chunk = baseline
+    ? {
+        file: "all-areas.json",
+        ids: index.rows.map((r) => r.id),
+        bbox: index.bounds,
+      }
+    : index.chunks.find((c) => c.ids.includes(id));
+  if (!chunk) return;
+  try {
+    await loadChunk(chunk);
+    if (selected !== id) return;
+    const layer = layers.get(id) as L.Polygon;
+    layer.setStyle(style(id));
+    layer.bringToFront();
+    if (navigate)
+      map.fitBounds(layer.getBounds(), {
+        padding: [30, 30],
+        maxZoom: 15,
+        animate: false,
+      });
+  } catch (error) {
+    console.error(error);
+    status.textContent =
+      "Selected income is available in the details. Its map shape could not load.";
+    status.hidden = false;
+    retry.hidden = false;
+  }
+}
+function renderList() {
+  const focusedId =
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement.dataset.areaId
+      : undefined;
+  const pages = Math.max(1, Math.ceil(listRows.length / PAGE_SIZE));
+  currentPage = Math.min(currentPage, pages - 1);
+  const start = currentPage * PAGE_SIZE;
+  const current = listRows.slice(start, start + PAGE_SIZE);
+  list.replaceChildren(
+    ...current.map((row) => {
+      const item = node("li");
+      const button = node("button", "", "area-row");
+      button.type = "button";
+      button.dataset.areaId = row.id;
+      button.setAttribute("aria-pressed", String(selected === row.id));
+      const label = node("span", row.id, "area-id");
+      const income = node("span", rowLabel(row), "area-income");
+      const text = `Census area ${row.id}, ${rowLabel(row)}${row.caution ? ", use with caution" : ""}`;
+      button.setAttribute("aria-label", text);
+      button.append(label, income);
+      if (row.caution) button.append(node("span", "Caution", "caution-badge"));
+      button.addEventListener("click", () => {
+        void selectArea(row.id, true);
+      });
+      item.append(button);
+      return item;
+    }),
+  );
+  element("list-status").textContent = current.length
+    ? `${start + 1}–${start + current.length} of ${listRows.length} areas`
+    : "No census areas match this number.";
+  element("page-number").textContent = `Page ${currentPage + 1} of ${pages}`;
+  previous.disabled = currentPage === 0;
+  next.disabled = currentPage >= pages - 1;
+  if (focusedId)
+    list
+      .querySelector<HTMLButtonElement>(`button[data-area-id="${focusedId}"]`)
+      ?.focus({ preventScroll: true });
+}
+function renderLegend(bands: Band[]) {
+  element("legend-bands").replaceChildren(
+    ...bands.map((band, i) => {
+      const label =
+        band.lower_inclusive_cad === null
+          ? `Below $${band.upper_exclusive_cad! / 1000}k`
+          : band.upper_exclusive_cad === null
+            ? `$${band.lower_inclusive_cad / 1000}k or more`
+            : `$${band.lower_inclusive_cad / 1000}k–<${band.upper_exclusive_cad / 1000}k`;
+      const item = node("li");
+      const swatch = node("span", "", "swatch");
+      swatch.style.backgroundColor = colours[i];
+      swatch.setAttribute("aria-hidden", "true");
+      item.append(swatch, node("span", label));
+      return item;
+    }),
+    (() => {
+      const item = node("li");
+      const swatch = node("span", "", "swatch");
+      swatch.style.backgroundColor = "#d8d8d3";
+      swatch.setAttribute("aria-hidden", "true");
+      item.append(swatch, node("span", "Unavailable"));
+      return item;
+    })(),
+  );
+}
+function selectPlace(place: Place) {
+  marker?.remove();
+  marker = L.circleMarker([place.lat, place.lon], {
+    radius: 6,
+    fillColor: "#fff",
+    color: "#172d29",
+    weight: 2,
+    fillOpacity: 1,
+  }).addTo(map);
+  const label = node("span", place.name);
+  marker.bindTooltip(label, { permanent: true, direction: "top" });
+  map.setView([place.lat, place.lon], 14, { animate: false });
+  if (place.areas.length === 1) {
+    void selectArea(place.areas[0], false);
+    element("place-status").textContent =
+      `Census area containing this place location: ${place.name}. This does not represent the entire community.`;
+  } else {
+    element("place-status").textContent =
+      `${place.name}: this place point has no single containing census area. No income has been assigned to this location; use the full area list.`;
+    selected = null;
+    for (const [id, layer] of layers) layer.setStyle(style(id));
+    element("details-title").textContent = "No containing census area";
+    element("details").replaceChildren(
+      node(
+        "p",
+        "This verified place location has no single census-area match. Choose an area from the list to inspect its reported income.",
+        "empty-description",
+      ),
+    );
+    renderList();
+  }
+}
+function searchPlaces() {
+  const text = placeSearch.value.trim().toLocaleLowerCase("en-CA");
+  const matches = text
+    ? index.places.filter((p) =>
+        p.name.toLocaleLowerCase("en-CA").includes(text),
+      )
+    : [];
+  element("place-results").replaceChildren(
+    ...matches.slice(0, 10).map((place) => {
+      const item = node("li");
+      const button = node("button", "", "place-result");
+      button.type = "button";
+      // Coordinates distinguish verified representations until final milestone-three curation.
+      button.append(
+        node("strong", place.name),
+        node(
+          "span",
+          `${place.lat.toFixed(4)}° N · ${Math.abs(place.lon).toFixed(4)}° W`,
+        ),
+      );
+      button.dataset.placeId = place.id;
+      button.addEventListener("click", () => selectPlace(place));
+      item.append(button);
+      return item;
+    }),
+  );
+  element("place-status").textContent = !text
+    ? "Place locations identify a point, not a whole community."
+    : !matches.length
+      ? "No place locations match this name."
+      : `${matches.length} matching place locations${matches.length > 10 ? "; showing the first 10. Refine your search to see others" : ""}. Choose a location.`;
+}
+async function initialise() {
+  try {
+    index = await loadJSON<Index>("index.json");
+    if (new Set(index.rows.map((r) => r.id)).size !== index.rows.length)
+      throw new Error("Duplicate area index.");
+    rows = new Map(index.rows.map((r) => [r.id, r]));
+    listRows = [...index.rows];
+    renderList();
+    renderLegend(index.proposedBands);
+    element("total-areas").textContent = String(index.rows.length);
+    filter.disabled = false;
+    placeSearch.disabled = false;
+    const download = element<HTMLAnchorElement>("download-csv");
+    download.href = dataURL("income.csv");
+    download.download = "hrm-income-2020.csv";
+    download.removeAttribute("aria-disabled");
+    filter.addEventListener("input", () => {
+      currentPage = 0;
+      listRows = index.rows.filter((row) =>
+        row.id.includes(filter.value.trim()),
+      );
+      renderList();
+    });
+    placeSearch.addEventListener("input", searchPlaces);
+    previous.addEventListener("click", () => {
+      currentPage--;
+      renderList();
+    });
+    next.addEventListener("click", () => {
+      currentPage++;
+      renderList();
+    });
+    element("full-view").addEventListener("click", () =>
+      map.fitBounds(leafletBounds(index.bounds), {
+        padding: [16, 16],
+        animate: false,
+      }),
+    );
+    element("urban-view").addEventListener("click", () =>
+      map.setView([44.664, -63.589], 13, { animate: false }),
+    );
+    map.on("moveend", () => {
+      void loadVisible();
+    });
+    retry.addEventListener("click", () => {
+      void loadVisible(!document.body.dataset.usabilityReady);
+    });
+    performance.mark("income-index-ready");
+    await loadVisible(true);
+  } catch (error) {
+    console.error(error);
+    document.body.dataset.mapState = "error";
+    status.textContent =
+      "Income data could not load. Reload the page to try again.";
+    element("list-status").textContent =
+      "The dataset is unavailable. No income values have been substituted.";
+  }
+}
+void initialise();

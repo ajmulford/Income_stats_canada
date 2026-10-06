@@ -1,6 +1,6 @@
 # Canadian household income maps
 
-A public income map starting with Halifax Regional Municipality. Milestone one builds and validates the data; the public website is a later milestone.
+A public income map starting with Halifax Regional Municipality. Milestones one and two are complete: a validated dataset and a working local map prototype. The public release follows the remaining workflow and launch checks.
 
 The agreed measure is **median before-tax total household income in 2020**, from the **2021 Census**, on **2021 dissemination areas** belonging to Halifax census subdivision `1209034`. Figures are Canadian dollars, with no wage projection, inflation adjustment, community interpolation, or additional rounding.
 
@@ -55,9 +55,38 @@ For another city, use `--config path/to/city.json --output data/processed/city`.
 - Compare six bulk income values and flags with separately retrieved official SDMX profiles. Bulk characteristic **243** corresponds to API characteristic **229** in dataflow **1.3**, verified against the API codelist. Numeric API flags are decoded from its metadata.
 - Verify the community query against the service count and assess validity, intersections, point containment, and duplicate place names.
 
+## Run the map prototype
+
+Use Node.js 22.12+ (verified with 24.12.0). First build the milestone-one dataset above, then:
+
+```sh
+npm ci
+npm run dev
+```
+
+Open the local URL printed by Vite. To check the production build:
+
+```sh
+npm run build
+npm run preview
+```
+
+`build` verifies the data artifact checksums, reads back the generated compressed chunks to verify every original geometry, copies the original CSV unchanged, checks TypeScript, and creates `dist/`. Relative asset paths support a GitHub Pages project subdirectory. Generated browser data is ignored by Git and must be rebuilt from reviewed inputs before deployment.
+
+Browser checks use installed Google Chrome on macOS, or Playwright Chromium elsewhere (`npx playwright install chromium`). Set `CHROME_EXECUTABLE_PATH` to use another Chromium executable.
+
+```sh
+npm run build
+npm test
+# Keep npm run preview running in another terminal, then:
+npm run measure
+```
+
+The measurement uses a fresh context, disabled cache, a 390×844 viewport, 150 ms latency, 1.6 Mbps download, and 4× CPU slowdown. It excludes external basemap tiles. See [milestone-two findings](docs/milestone-two.md), [delivery sizes](reports/web-data.json), and [recorded measurements](reports/mobile-performance.json).
+
 ## Limits requiring later work
 
-The income GeoJSON is deliberately unsimplified. Mobile delivery and the five-second target have not been measured. Proposed fixed income bands are not approved. Current civic-community boundaries differ in vintage and purpose from census units; HRM warns some await consultation. Place records require curation, disambiguation labels, and verified aliases before becoming the final search index. The public interface, GitHub repository, and deployment have not been created.
+All income geometries retain the source coordinates. The initial urban map met the five-second target in three emulated mobile runs; physical-phone and deployed-host checks remain pending. Proposed fixed income bands are visibly marked as drafts. Current civic-community boundaries differ in vintage and purpose from census units; HRM warns some await consultation. Prototype search uses place points with coordinate disambiguation. Curated location labels, verified aliases, community-boundary behaviour, mobile selection panels, and manual screen-reader checks remain for milestone three and launch verification. The local prototype has not been deployed.
 
 ## Source attribution
 

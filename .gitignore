@@ -6,3 +6,9 @@ data/raw/
 data/cache/
 data/processed/
 .pytest_cache/
+node_modules/
+dist/
+public/data/
+playwright-report/
+test-results/
+reports/screenshots/

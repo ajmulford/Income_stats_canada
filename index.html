@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#153f38" />
+    <meta
+      name="description"
+      content="Explore reported 2020 median household income across Halifax Regional Municipality using 2021 Census areas."
+    />
+    <title>Halifax Income Atlas</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#area-list">Skip to the census area list</a>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Halifax Income Atlas home"
+        ><span class="brand-mark" aria-hidden="true">H<span>↗</span></span
+        ><span>Halifax <strong>Income Atlas</strong></span></a
+      >
+      <span class="edition"
+        >A view of our municipality
+        <span class="edition-dot" aria-hidden="true"></span> Preview</span
+      >
+    </header>
+    <main>
+      <section class="introduction" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">HALIFAX REGIONAL MUNICIPALITY</p>
+          <h1 id="page-title">Income, across Halifax.</h1>
+          <p class="intro-copy">
+            Explore how household income varies across our urban and rural
+            communities.
+          </p>
+        </div>
+        <div class="data-stamp">
+          <strong>2020 income</strong
+          ><span>2021 Census · Before tax · CAD</span>
+        </div>
+      </section>
+      <div class="workspace">
+        <section class="map-panel" aria-labelledby="map-title">
+          <div class="map-toolbar">
+            <h2 id="map-title">The income map</h2>
+            <div class="map-actions">
+              <button id="urban-view" type="button">Urban view</button
+              ><button id="full-view" type="button">Show all HRM</button>
+            </div>
+          </div>
+          <div class="map-frame">
+            <div
+              id="map"
+              aria-label="Map of Halifax census areas. Use the census area list for accessible income selection."
+            ></div>
+            <p id="map-status" class="map-status" role="status">
+              Loading census areas…
+            </p>
+            <p id="basemap-status" class="basemap-status" role="status" hidden>
+              Street map unavailable. Income areas and place locations remain
+              available.
+            </p>
+            <button id="retry-map" class="retry-map" hidden type="button">
+              Retry census areas
+            </button>
+          </div>
+          <section class="legend" aria-labelledby="legend-title">
+            <div class="legend-heading">
+              <h3 id="legend-title">Median household income</h3>
+              <span>Draft dollar bands</span>
+            </div>
+            <ul id="legend-bands"></ul>
+            <p class="interpretation">
+              Household totals are not adjusted for household size, taxes, or
+              living costs.
+            </p>
+          </section>
+        </section>
+        <aside class="sidebar" aria-label="Explore census areas">
+          <section
+            class="selection-panel"
+            aria-labelledby="details-title"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <p class="eyebrow">AREA DETAILS</p>
+            <h2 id="details-title">Start with an area.</h2>
+            <div id="details">
+              <p class="empty-description">
+                Select a coloured area on the map or choose one from the list
+                below.
+              </p>
+              <div class="empty-motif" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <p class="small-note">
+                Each shape is a census area, rather than a neighbourhood or an
+                individual home.
+              </p>
+            </div>
+          </section>
+          <section class="search-panel" aria-labelledby="place-title">
+            <h2 id="place-title">Find a place</h2>
+            <label class="sr-only" for="place-search"
+              >Community or place name</label
+            ><input
+              id="place-search"
+              type="search"
+              placeholder="Try Bedford or Sheet Harbour"
+              autocomplete="off"
+              disabled
+            />
+            <p id="place-status" class="small-note">
+              Place locations identify a point, not a whole community.
+            </p>
+            <ul id="place-results"></ul>
+          </section>
+          <section class="areas-panel" aria-labelledby="area-list-title">
+            <div class="list-heading">
+              <h2 id="area-list-title">Census areas</h2>
+              <span id="total-areas">—</span>
+            </div>
+            <label class="sr-only" for="area-filter"
+              >Filter census areas by identifier</label
+            ><input
+              id="area-filter"
+              type="search"
+              placeholder="Filter by census area number"
+              autocomplete="off"
+              disabled
+            />
+            <p id="list-status" class="small-note" role="status">
+              Loading the area list…
+            </p>
+            <ul
+              id="area-list"
+              tabindex="-1"
+              aria-label="Census areas and their reported incomes"
+            ></ul>
+            <nav class="pagination" aria-label="Census area list pages">
+              <button id="previous-page" type="button" disabled>Previous</button
+              ><span id="page-number">—</span
+              ><button id="next-page" type="button" disabled>Next</button>
+            </nav>
+          </section>
+        </aside>
+      </div>
+      <section class="data-footer" aria-labelledby="about-title">
+        <div>
+          <h2 id="about-title">Public data. A clearer picture.</h2>
+          <p>
+            Reported median before-tax total household income in 2020, from the
+            2021 Census. Coverage follows the 2021 Halifax municipal boundary,
+            including rural communities.
+          </p>
+          <details>
+            <summary>Sources and how to read this map</summary>
+            <p>
+              Statistics Canada, 2021 Census Profile and 2021 census geography.
+              This preview uses proposed fixed dollar bands. No inflation
+              adjustment, wage projection, or additional income rounding has
+              been applied.
+            </p>
+            <p>
+              Values describe the households across each census area. They do
+              not describe an individual home, individual income, or
+              affordability. Confidentiality-suppressed figures appear as
+              unavailable.
+            </p>
+            <p>
+              Separately enumerated reserve subdivisions—Cole Harbour 30, Beaver
+              Lake 17, Sheet Harbour 36, and Wallace Hills 14A—are outside the
+              Halifax municipal census subdivision used here.
+            </p>
+            <p>
+              Place lookup uses verified GeoSuite point records.
+              Community-boundary search and final search curation are still
+              being developed.
+            </p>
+            <p>
+              <a
+                href="https://www150.statcan.gc.ca/n1/en/catalogue/98-401-X2021006"
+                >Statistics Canada Census Profile</a
+              >
+              ·
+              <a
+                href="https://www.statcan.gc.ca/en/terms-conditions/open-licence"
+                >Statistics Canada Open Licence</a
+              >
+            </p>
+          </details>
+        </div>
+        <a id="download-csv" class="download-link" aria-disabled="true"
+          >Download income CSV <span aria-hidden="true">↓</span></a
+        >
+      </section>
+    </main>
+    <footer class="site-footer">
+      <span>Halifax Income Atlas</span><span>2020 income · 2021 geography</span>
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

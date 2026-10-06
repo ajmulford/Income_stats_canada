@@ -4,7 +4,7 @@
 
 Milestone one has been implemented and validated against official source snapshots retrieved October 6, 2026. See [milestone-one findings](docs/milestone-one.md) and [run instructions](README.md). The dataset contains all 604 dissemination areas belonging to the 2021 Halifax municipal census subdivision: 599 published income medians and five confidentiality-suppressed values. Six independent official API sample comparisons passed.
 
-Community/place-source feasibility has been assessed. Boundary consultation caveats, duplicate place representations, and one uncontained place point require explicit handling before final public search. Proposed dollar bands remain subject to review. Mobile delivery performance is unmeasured, and no application or deployment has been created. These are handoff items for subsequent milestones, not unexplained income-data join failures.
+Community/place-source feasibility has been assessed. Boundary consultation caveats, duplicate place representations, and one uncontained place point require explicit handling before final public search. Proposed dollar bands remain subject to review. Milestone two is implemented: a local TypeScript/Leaflet map, selection details, accessible paginated area list, and original CSV download use the reviewed dataset. Lossless spatial chunks reached initial usability in 3.34–3.35 seconds in three cold-cache mobile-emulation runs (five-second target); full geometry took 14.05 seconds. Ten browser checks passed. See [milestone-two findings](docs/milestone-two.md) for the measurement profile and limits. Final resident workflows, physical-device/manual accessibility verification, and deployment remain for milestones three and four.
 
 ## Agreed product purpose
 
