@@ -61,7 +61,7 @@ The measurement binds its evidence to the candidate fingerprint and source hash;
 
 ## GitHub setup and release
 
-The intended host is a **public** GitHub repository, using standard Ubuntu runners and GitHub Pages. This checkout currently has no configured GitHub remote; select the intended owner/repository first. Do not infer the publishing account from whichever CLI account happens to be active.
+The intended host is a **public** GitHub repository, using standard Ubuntu runners and GitHub Pages. The configured remote is the public repository `ajmulford/Income_stats_canada`. Do not infer the publishing account from whichever CLI account happens to be active.
 
 1. Push the reviewed source and evidence to the selected public repository.
 2. In Settings → Pages, select **GitHub Actions** as the source. Keep the `github-pages` environment restricted to the default branch.

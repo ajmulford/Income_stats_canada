@@ -1,6 +1,6 @@
 # Milestone four: verify and release
 
-Status on October 6, 2026: **release implementation and local automated checks are ready; publication remains pending**. No GitHub repository has been selected/configured in this checkout, no hosted CI run or Pages deployment has occurred, and actual physical-phone/screen-reader checks are not recorded. This milestone is not marked complete while those launch criteria remain outstanding.
+Status on October 6, 2026: **release implementation and local automated checks are ready; publication remains pending**. The remote points to the public repository `ajmulford/Income_stats_canada`; publication workflows are now included in the reviewed configuration. No hosted CI run or Pages deployment has occurred, and actual physical-phone/screen-reader checks are not recorded. This milestone is not marked complete while those launch criteria remain outstanding.
 
 ## Prepared release implementation
 
@@ -51,9 +51,9 @@ OSM standard tiles provide best-effort availability without a service guarantee.
 
 ## Remaining steps to complete the milestone
 
-1. Select/configure the intended public GitHub repository; this checkout currently has no remote. Push reviewed work and run the validation-only workflow.
+1. Run the validation-only workflow on the public `ajmulford/Income_stats_canada` repository and record its result.
 2. Perform the physical-phone and actual screen-reader scenarios in [the checklist](release-checklist.md). Complete [release/verification.json](../release/verification.json) with honest device/browser, tester, timestamp, findings, and the exact candidate identity. Resolve any failures and reverify changed content.
 3. Verify that the Linux-built candidate matches the locally tested content. Platform/source differences fail closed and require investigation rather than silent approval.
 4. Enable GitHub Actions as the Pages source and run the gated publication workflow. Record the actual URL/date/commit and verify the deployed artifact and cold-cache hosted performance before announcing the release.
 
-Changes remain local and uncommitted for review. No account settings, GitHub repository, remote, or public site were modified during this work.
+The user authorized making the repository public and committing/pushing the outstanding release configuration. The user configured the remote and pushed the committed application. This follow-up made the repository public with explicit authorization, using the owner’s existing authentication. The site remains unpublished while manual launch checks are pending.

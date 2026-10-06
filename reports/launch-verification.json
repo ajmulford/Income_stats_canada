@@ -41,7 +41,12 @@
     "cost_assumptions": "Public repository, standard runners, free Pages domain, default cache limit, artifact storage within free allowance; account settings not yet verified"
   },
   "publication_blockers": [
-    "No GitHub remote configured",
     "Required physical-phone and screen-reader checks not completed"
-  ]
+  ],
+  "repository": {
+    "name": "ajmulford/Income_stats_canada",
+    "visibility": "public",
+    "pages_enabled": false,
+    "workflows_uploaded": true
+  }
 }
