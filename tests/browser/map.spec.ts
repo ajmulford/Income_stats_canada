@@ -547,3 +547,60 @@ test("desktop details stay open after resizing from collapsed mobile details", a
   await page.setViewportSize({width:390,height:844});
   await expect(page.getByRole("button", {name:"Collapse details"})).toBeVisible();
 });
+
+
+test("census list sorts all pages and filtered results while keeping unknown incomes last", async ({page}) => {
+  await ready(page);
+  const index: {rows: {id: string; income: number | null}[]} = await (await page.request.get("/data/hrm/index.json")).json();
+  const sort = page.getByRole("combobox", {name:"Sort census areas"});
+  const ids = () => page.locator("#area-list button").evaluateAll(buttons => buttons.map(b => (b as HTMLElement).dataset.areaId));
+  const byIncome = [...index.rows].sort((a,b) => {
+    if (a.income === null) return b.income === null ? a.id.localeCompare(b.id) : 1;
+    if (b.income === null) return -1;
+    return b.income-a.income || a.id.localeCompare(b.id);
+  });
+  await sort.selectOption("income-desc");
+  await expect.poll(ids).toEqual(byIncome.slice(0,30).map(r => r.id));
+  await page.getByRole("button", {name:"Next",exact:true}).click();
+  await expect.poll(ids).toEqual(byIncome.slice(30,60).map(r => r.id));
+  await sort.selectOption("area-desc");
+  await expect(page.locator("#page-number")).toHaveText("Page 1 of 21");
+  await expect.poll(ids).toEqual([...index.rows].sort((a,b)=> b.id.localeCompare(a.id)).slice(0,30).map(r=>r.id));
+  await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill("120901");
+  await sort.selectOption("income-asc");
+  const filtered = index.rows.filter(r=>r.id.includes("120901")).sort((a,b)=> {
+    if (a.income === null) return b.income === null ? a.id.localeCompare(b.id) : 1;
+    if (b.income === null) return -1;
+    return a.income-b.income || a.id.localeCompare(b.id);
+  });
+  await expect.poll(ids).toEqual(filtered.slice(0,30).map(r=>r.id));
+  const selected = filtered.find(r=>r.income!==null)!;
+  await page.locator(`#area-list button[data-area-id="${selected.id}"]`).click();
+  await expect(page.getByRole("heading", {name:`Census area ${selected.id}`})).toBeVisible();
+  await sort.selectOption("income-desc");
+  await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill(selected.id);
+  await expect(page.locator(`#area-list button[data-area-id="${selected.id}"]`)).toHaveAttribute("aria-pressed","true");
+  // Visit every page to verify the unavailable rows remain last globally.
+  await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill("");
+  for (let pageNumber=1;pageNumber<21;pageNumber++) await page.getByRole("button",{name:"Next",exact:true}).click();
+  await expect.poll(ids).toEqual(byIncome.slice(600).map(r=>r.id));
+  await expect(page.locator("#area-list button").last()).toContainText("Income unavailable");
+});
+
+
+test("phone sort control stays reachable above expanded details", async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  await ready(page);
+  await page.getByRole("searchbox", {name:"Filter census areas by identifier"}).fill("12090312");
+  await page.getByRole("button", {name:"Census area 12090312, $50,800",exact:true}).click();
+  const sort = page.getByRole("combobox", {name:"Sort census areas"});
+  await sort.focus();
+  await expect.poll(async () => {
+    const control = (await sort.boundingBox())!;
+    const panel = (await page.locator("#selection-panel").boundingBox())!;
+    return control.y >= 0 && control.y + control.height < panel.y;
+  }).toBe(true);
+  await sort.selectOption("income-desc");
+  await expect(sort).toBeFocused();
+  await expect(page.locator("#details .income-value")).toHaveText("$50,800");
+});

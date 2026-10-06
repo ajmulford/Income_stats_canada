@@ -928,3 +928,24 @@ h1 {
     display: none;
   }
 }
+
+.sort-label {
+  display: block;
+  margin: 12px 0 6px;
+  font-size: 12px;
+}
+#area-sort {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid #b8c3b8;
+  border-radius: 6px;
+  background: #fcfdf9;
+  color: #203a31;
+  font: inherit;
+  font-size: 12px;
+}
+#area-sort:focus-visible {
+  outline: 3px solid #bb6318;
+  outline-offset: 3px;
+}

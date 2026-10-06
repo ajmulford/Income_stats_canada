@@ -38,6 +38,7 @@ function node<K extends keyof HTMLElementTagNameMap>(
 const status = element("map-status");
 const list = element("area-list");
 const filter = element<HTMLInputElement>("area-filter");
+const areaSort = element<HTMLSelectElement>("area-sort");
 const placeSearch = element<HTMLInputElement>("place-search");
 const previous = element<HTMLButtonElement>("previous-page");
 const next = element<HTMLButtonElement>("next-page");
@@ -268,7 +269,7 @@ function revealFocusedControl() {
     !panel.classList.contains("has-selection") ||
     !(active instanceof HTMLElement) ||
     panel.contains(active) ||
-    !active.matches("button, input, a")
+    !active.matches("button, input, select, a")
   )
     return;
   const bottom = active.getBoundingClientRect().bottom;
@@ -392,6 +393,17 @@ async function selectArea(id: string, navigate: boolean, revealMap = false) {
   }
 }
 function renderList() {
+  listRows.sort((a, b) => {
+    const mode = areaSort.value;
+    const byId = a.id.localeCompare(b.id);
+    if (mode === "area-asc") return byId;
+    if (mode === "area-desc") return -byId;
+    // Suppressed values are unknown, rather than zero, in either direction.
+    if (a.income === null) return b.income === null ? byId : 1;
+    if (b.income === null) return -1;
+    const difference = a.income - b.income;
+    return (mode === "income-desc" ? -difference : difference) || byId;
+  });
   const focusedId =
     document.activeElement instanceof HTMLElement
       ? document.activeElement.dataset.areaId
@@ -535,6 +547,11 @@ async function initialise() {
     renderLegend(index.incomeBands);
     element("total-areas").textContent = String(index.rows.length);
     filter.disabled = false;
+    areaSort.disabled = false;
+    areaSort.addEventListener("change", () => {
+      currentPage = 0;
+      renderList();
+    });
     placeSearch.disabled = false;
     const download = element<HTMLAnchorElement>("download-csv");
     download.href = dataURL("income.csv");
