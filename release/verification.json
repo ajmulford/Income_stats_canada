@@ -1,5 +1,5 @@
 {
-  "candidate_sha256": "60ba0763f41525e6446f7a9571fa9ab8582718f9d901cdd8be0959e40dd531fe",
+  "candidate_sha256": "5ca22848313b271f6027f21c53233f6770dab7ef40901276b6d51251f2e456f6",
   "checks": [
     {
       "name": "physical_phone",
@@ -7,7 +7,7 @@
       "environment": "Google Pixel 9; Android (tester reports latest version); Chrome",
       "tester": "Alex",
       "tested_at": "2026-10-06",
-      "notes": "Original physical check passed on October 6, 2026 on candidate 2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b. Android/Chrome version numbers and exact time were not recorded. Prior physical evidence retained under Alex\u2019s explicit approval to deploy the mainland overview and overlay controls; no repeated Pixel/TalkBack test claimed. See manual_evidence_disposition."
+      "notes": "Original physical check passed October 6, 2026 on candidate 2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b. Prior device evidence retained under Alex\u2019s explicit approval of this update; no repeated physical Pixel/TalkBack test claimed. See manual_evidence_disposition."
     },
     {
       "name": "screen_reader",
@@ -15,15 +15,15 @@
       "environment": "Google Pixel 9; Android (tester reports latest version); Chrome; TalkBack",
       "tester": "Alex",
       "tested_at": "2026-10-06",
-      "notes": "Original physical check passed on October 6, 2026 on candidate 2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b. Android/Chrome version numbers and exact time were not recorded. Prior physical evidence retained under Alex\u2019s explicit approval to deploy the mainland overview and overlay controls; no repeated Pixel/TalkBack test claimed. See manual_evidence_disposition."
+      "notes": "Original physical check passed October 6, 2026 on candidate 2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b. Prior device evidence retained under Alex\u2019s explicit approval of this update; no repeated physical Pixel/TalkBack test claimed. See manual_evidence_disposition."
     }
   ],
   "manual_evidence_disposition": {
-    "type": "user_approved_map_controls_update",
+    "type": "user_approved_selection_and_sort_update",
     "previously_tested_candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
-    "change": "Mainland overview framing, income overlay toggle, and 0\u2013100% opacity control. Dataset and reported income unchanged.",
-    "authorization": "Alex confirmed the mainland view works, accepted the overlay controls, and explicitly requested commit and deployment.",
+    "change": "Mobile and desktop selection reveal map/details, desktop details stay open, census list sorting, and place suggestions share viewport handling.",
+    "authorization": "Alex confirmed the fixes and explicitly requested commit and deployment.",
     "new_physical_checks_performed": false,
-    "automated_verification": "63 checks across Chromium, Firefox and WebKit; touch toggle and phone layout checked in browser emulation."
+    "automated_verification": "93 browser checks across Chromium, Firefox and WebKit."
   }
 }
