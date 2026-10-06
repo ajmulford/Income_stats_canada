@@ -1,5 +1,5 @@
 {
-  "candidate_sha256": "1ca7026718b9716c40cefb90a96d92848725de8789cb0ed93d2cd11d571b7e4e",
+  "candidate_sha256": "60ba0763f41525e6446f7a9571fa9ab8582718f9d901cdd8be0959e40dd531fe",
   "checks": [
     {
       "name": "physical_phone",
@@ -7,7 +7,7 @@
       "environment": "Google Pixel 9; Android (tester reports latest version); Chrome",
       "tester": "Alex",
       "tested_at": "2026-10-06",
-      "notes": "Original physical check passed on October 6, 2026 on candidate 2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b. Android/Chrome version numbers and exact time were not recorded. Prior physical evidence retained for this desktop-scroll update; no new Pixel/TalkBack test claimed. Alex confirmed the change works and requested deployment. See manual_evidence_disposition."
+      "notes": "Original physical check passed on October 6, 2026 on candidate 2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b. Android/Chrome version numbers and exact time were not recorded. Prior physical evidence retained under Alex\u2019s explicit approval to deploy the mainland overview and overlay controls; no repeated Pixel/TalkBack test claimed. See manual_evidence_disposition."
     },
     {
       "name": "screen_reader",
@@ -15,15 +15,15 @@
       "environment": "Google Pixel 9; Android (tester reports latest version); Chrome; TalkBack",
       "tester": "Alex",
       "tested_at": "2026-10-06",
-      "notes": "Original physical check passed on October 6, 2026 on candidate 2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b. Android/Chrome version numbers and exact time were not recorded. Prior physical evidence retained for this desktop-scroll update; no new Pixel/TalkBack test claimed. Alex confirmed the change works and requested deployment. See manual_evidence_disposition."
+      "notes": "Original physical check passed on October 6, 2026 on candidate 2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b. Android/Chrome version numbers and exact time were not recorded. Prior physical evidence retained under Alex\u2019s explicit approval to deploy the mainland overview and overlay controls; no repeated Pixel/TalkBack test claimed. See manual_evidence_disposition."
     }
   ],
   "manual_evidence_disposition": {
-    "type": "approved_desktop_scroll_update",
+    "type": "user_approved_map_controls_update",
     "previously_tested_candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
-    "change": "Desktop wheel zoom now requires Ctrl; desktop hint added and hidden on coarse touch devices. Mobile touch handlers, data, selection and accessible list remain unchanged.",
-    "authorization": "Alex confirmed the change works great and explicitly requested commit and deployment.",
+    "change": "Mainland overview framing, income overlay toggle, and 0\u2013100% opacity control. Dataset and reported income unchanged.",
+    "authorization": "Alex confirmed the mainland view works, accepted the overlay controls, and explicitly requested commit and deployment.",
     "new_physical_checks_performed": false,
-    "current_change_user_confirmation": "That works great! Let\u2019s commit and deploy this change."
+    "automated_verification": "63 checks across Chromium, Firefox and WebKit; touch toggle and phone layout checked in browser emulation."
   }
 }
