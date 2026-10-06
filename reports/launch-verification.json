@@ -1,0 +1,47 @@
+{
+  "status": "candidate_verified_publication_pending",
+  "date": "2026-10-06",
+  "candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
+  "checks": {
+    "reviewed_data_rebuild": "passed",
+    "python_tests": {
+      "status": "passed",
+      "count": 20
+    },
+    "browser_tests": {
+      "status": "passed",
+      "scenarios": 15,
+      "engines": [
+        "Chromium (installed Chrome 154)",
+        "Firefox 155 (Playwright)",
+        "WebKit 26.6 (Playwright)"
+      ],
+      "total": 45
+    },
+    "release_gate_tests": {
+      "status": "passed",
+      "count": 6
+    },
+    "workflow_syntax": "passed; actionlint 1.7.12, shellcheck not run",
+    "local_served_artifacts": "passed",
+    "mobile_emulation": {
+      "status": "passed",
+      "median_ms": 3385.9000000953674
+    },
+    "physical_phone": "pending",
+    "actual_screen_reader": "pending",
+    "github_ci_execution": "pending",
+    "github_pages_deployment": "pending",
+    "hosted_performance": "pending"
+  },
+  "hosting": {
+    "site_bytes_excluding_release_manifest": 20745033,
+    "pages_limit_bytes": 1000000000,
+    "monthly_target_cad": 0,
+    "cost_assumptions": "Public repository, standard runners, free Pages domain, default cache limit, artifact storage within free allowance; account settings not yet verified"
+  },
+  "publication_blockers": [
+    "No GitHub remote configured",
+    "Required physical-phone and screen-reader checks not completed"
+  ]
+}

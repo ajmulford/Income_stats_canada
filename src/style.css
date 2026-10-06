@@ -840,3 +840,11 @@ h1 {
     transition: none !important;
   }
 }
+@media (max-width: 760px) {
+  .edition {
+    display: block;
+  }
+  #publication-status {
+    display: block;
+  }
+}

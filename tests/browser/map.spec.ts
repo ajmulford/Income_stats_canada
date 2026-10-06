@@ -200,6 +200,7 @@ test("full municipality and urban controls load their views without fabricated d
 }) => {
   await ready(page);
   await page.getByRole("button", { name: "Show all HRM" }).click();
+  await expect(page.locator("body")).toHaveAttribute("data-loaded-areas", "604");
   await expect(page.locator("body")).toHaveAttribute("data-map-state", "ready");
   await page.getByRole("button", { name: "Urban view", exact: true }).click();
   await expect(page.locator("body")).toHaveAttribute("data-map-state", "ready");
@@ -307,4 +308,75 @@ test("approved bands keep exact thresholds and separate unavailable income", asy
       159999, 160000, 224000,
     ].map((v) => bandIndex(v, bands)),
   ).toEqual([0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6]);
+});
+
+test("rural place search selects its own census income with street tiles blocked", async ({
+  page,
+}) => {
+  await ready(page);
+  const places = JSON.parse(
+    await readFile("data/processed/hrm/places.json", "utf8"),
+  );
+  const income = JSON.parse(
+    await readFile("data/processed/hrm/income.geojson", "utf8"),
+  );
+  const place = places.find(
+    (p: { name: string }) => p.name === "Sheet Harbour",
+  );
+  const expected = income.features.find(
+    (f: { properties: { da_uid: string } }) =>
+      f.properties.da_uid === place.containing_da_uids[0],
+  ).properties;
+  await page
+    .getByRole("searchbox", { name: "Community or place name" })
+    .fill("Sheet Harbour");
+  await expect(page.locator("#place-results button strong").first()).toHaveText(
+    "Sheet Harbour",
+  );
+  await page
+    .locator(`#place-results button[data-place-id="${place.place_id}"]`)
+    .click();
+  await expect(page.locator("#details-title")).toHaveText(
+    `Census area ${expected.da_uid}`,
+  );
+  await expect(page.locator("#details .income-value")).toHaveText(
+    new Intl.NumberFormat("en-CA", {
+      style: "currency",
+      currency: "CAD",
+      maximumFractionDigits: 0,
+    }).format(expected.median_household_income_cad),
+  );
+  await expect(page.locator("#place-status")).toContainText(
+    "does not represent the entire community",
+  );
+});
+
+test("project-subdirectory hosting keeps assets, search, selection, and CSV within the project", async ({
+  page,
+}) => {
+  await page.route("**/IncomeStatistics/**", async (route) => {
+    const url = new URL(route.request().url());
+    url.pathname = url.pathname.replace(/^\/IncomeStatistics\//, "/");
+    await route.fulfill({
+      response: await route.fetch({ url: url.toString() }),
+    });
+  });
+  await ready(page, "/IncomeStatistics/?basemap=off");
+  await expect(page.locator("#download-csv")).toHaveAttribute(
+    "href",
+    "./data/hrm/income.csv",
+  );
+  await page
+    .getByRole("searchbox", { name: "Filter census areas by identifier" })
+    .fill("12090312");
+  await page
+    .getByRole("button", { name: "Census area 12090312, $50,800", exact: true })
+    .click();
+  await expect(page.locator("#details .income-value")).toHaveText("$50,800");
+  const resolved = await page
+    .locator("#download-csv")
+    .evaluate((a: HTMLAnchorElement) => a.href);
+  expect(new URL(resolved).pathname).toBe(
+    "/IncomeStatistics/data/hrm/income.csv",
+  );
 });

@@ -9,7 +9,11 @@
     "build": "npm run prepare:data && tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "playwright test",
-    "measure": "node scripts/measure-mobile.mjs"
+    "measure": "node scripts/measure-mobile.mjs",
+    "audit:release": "node scripts/release-tools.mjs audit",
+    "check:release": "node scripts/release-tools.mjs check",
+    "test:browsers": "CROSS_BROWSER=1 playwright test",
+    "test:release": "node --test tests/release.test.mjs"
   },
   "dependencies": {
     "leaflet": "1.9.4"

@@ -1,0 +1,21 @@
+{
+  "candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
+  "checks": [
+    {
+      "name": "physical_phone",
+      "status": "pending",
+      "environment": "",
+      "tester": "",
+      "tested_at": "",
+      "notes": ""
+    },
+    {
+      "name": "screen_reader",
+      "status": "pending",
+      "environment": "",
+      "tester": "",
+      "tested_at": "",
+      "notes": ""
+    }
+  ]
+}

@@ -51,7 +51,8 @@ const map = L.map("map", {
   fadeAnimation: false,
   markerZoomAnimation: false,
 }).setView([44.664, -63.589], 13);
-L.control.zoom({ position: "bottomright" }).addTo(map);
+L.control.zoom({ position: "topleft" }).addTo(map);
+map.attributionControl.setPosition("topright");
 map.attributionControl.addAttribution(
   '<a href="https://www150.statcan.gc.ca/n1/en/catalogue/98-401-X2021006">Statistics Canada, 2021 Census</a>',
 );
@@ -121,6 +122,7 @@ async function loadChunk(chunk: Chunk): Promise<void> {
       },
     }).addTo(map);
     loaded.add(chunk.file);
+    document.body.dataset.loadedAreas = String(layers.size);
   })();
   inFlight.set(chunk.file, task);
   try {
@@ -132,6 +134,7 @@ async function loadChunk(chunk: Chunk): Promise<void> {
 async function loadVisible(initial = false): Promise<void> {
   if (!index) return;
   const generation = ++loadingGeneration;
+  document.body.dataset.mapState = "loading";
   retry.hidden = true;
   status.textContent = "Loading census areas…";
   status.hidden = false;
@@ -172,7 +175,7 @@ async function loadVisible(initial = false): Promise<void> {
 }
 function enableBasemap() {
   const message = element("basemap-status");
-  if (query.get("basemap") === "off") {
+  if (query.get("basemap") === "off" || !index.basemap.enabled) {
     message.textContent =
       "Street map is off. Income areas and place locations remain available.";
     message.hidden = false;
@@ -180,10 +183,9 @@ function enableBasemap() {
   }
   if (tileLayer) return;
   let errors = 0;
-  tileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 18,
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+  tileLayer = L.tileLayer(index.basemap.url, {
+    maxZoom: index.basemap.maxZoom,
+    attribution: index.basemap.attribution,
   }).addTo(map);
   tileLayer.on("tileerror", () => {
     if (++errors >= 2) {

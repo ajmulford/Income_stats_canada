@@ -1,0 +1,9 @@
+# Publish exact reviewed candidates through GitHub Actions
+
+Use GitHub Actions to verify source snapshots, rebuild the reviewed data and static site, and exercise Chromium, Firefox, and WebKit before publication. Pin action versions to their official release commits. Keep raw source archives in a bounded cache and publish only the audited `dist/` artifact. A changed live source or changed reviewed income/CSV checksum fails closed; caches do not replace a durable source snapshot archive.
+
+Publication is manually dispatched on the public repository's default branch. Ordinary pushes and pull requests verify changes without publishing. The release gate requires physical-phone and actual screen-reader evidence, plus three passing mobile-emulation runs, bound to the exact candidate's content fingerprint. These implement the existing development-plan launch criteria; they are not a new per-deployment permission requirement.
+
+The fingerprint covers all served HTML, assets, and browser data, while excluding the self-describing release manifest. Commit metadata and manual evidence therefore do not invalidate an otherwise byte-identical candidate. During publication the gate verifies the preview candidate before replacing its preview labels with the actual America/Halifax release date. The final manifest separately identifies the published content. Local dirty builds are labelled accurately and remain unpublished candidates.
+
+Keep candidate artifacts only for manual workflow runs, retain artifacts/traces for one day, use standard Ubuntu runners, and retain the free GitHub Pages domain to support the $0/month target. Verify actual account storage/cache budgets and hosted behaviour before launch. Post-deployment checks compare hosted HTML/assets/income index/CSV with the deployed manifest; hosted mobile performance is recorded separately. A failed hosted check is an unverified release, not a passing launch.

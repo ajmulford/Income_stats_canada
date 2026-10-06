@@ -1,6 +1,6 @@
 # Canadian household income maps
 
-A public income map starting with Halifax Regional Municipality. Milestones one through three are complete: a validated dataset and resident workflows in a working local map. The public release follows the remaining workflow and launch checks.
+A public income map starting with Halifax Regional Municipality. Milestones one through three are complete: a validated dataset and resident workflows in a working local map. Milestone four release tooling and automated checks are prepared; publication still requires the documented manual launch checks and GitHub setup.
 
 The agreed measure is **median before-tax total household income in 2020**, from the **2021 Census**, on **2021 dissemination areas** belonging to Halifax census subdivision `1209034`. Figures are Canadian dollars, with no wage projection, inflation adjustment, community interpolation, or additional rounding.
 
@@ -84,9 +84,32 @@ npm run measure
 
 The measurement uses a fresh context, disabled cache, a 390×844 viewport, 150 ms latency, 1.6 Mbps download, and 4× CPU slowdown. It excludes external basemap tiles. See [milestone-two findings](docs/milestone-two.md), [delivery sizes](reports/web-data.json), and [milestone-three findings](docs/milestone-three.md). The original [milestone-two measurements](reports/mobile-performance.json) are retained; current evidence is in [milestone-three measurements](reports/mobile-performance-milestone-three.json). Set `REPORT_PATH=reports/mobile-performance-milestone-three.json` when repeating the current measurements.
 
+## Prepare and verify a release
+
+```sh
+npm run build
+npm run audit:release
+npm run test:release
+npx playwright install chromium firefox webkit
+npm run test:browsers
+```
+
+The audit checks every built browser artifact and creates `dist/release.json` plus [candidate evidence](reports/release-candidate.json). It records the source/data checksums, exact content fingerprint, commit, and whether the local code has uncommitted changes. [data/reviewed-release.json](data/reviewed-release.json) pins the reviewed income/CSV independently of the generated artifact manifest.
+
+With production preview running, measure this exact candidate:
+
+```sh
+REPORT_PATH=reports/mobile-performance-milestone-four.json ENFORCE_TARGET=1 npm run measure
+npm run check:release
+```
+
+`check:release` intentionally fails until physical-phone and actual screen-reader evidence is completed in [release/verification.json](release/verification.json). See the [manual launch and publication instructions](docs/release-checklist.md) and [milestone-four status](docs/milestone-four.md). The dispatch-only Pages workflow defaults to validation without publication; normal pushes and pull requests never publish. Only audited `dist/` is published, with the actual release date stamped after the checks pass.
+
+The basemap is replaceable through [data/basemap.json](data/basemap.json), including an enable/disable switch. Income and search data remain independent of the street map. No account, database, paid API, or custom domain is required by this implementation.
+
 ## Limits requiring later work
 
-All income geometries retain the source coordinates. The initial urban map met the five-second target in three emulated mobile runs; physical-phone and deployed-host checks remain pending. Fixed income bands are approved and configured in [data/income-bands.json](data/income-bands.json). Current civic-community boundaries differ in vintage and purpose from census units; HRM warns some await consultation. Search uses reviewed place points with direction, coordinate, and census-area labels. No verified aliases are available in the source inventory; unsupported names are explained. Community boundaries use the [documented point fallback](docs/adr/0002-place-point-navigation.md). Collapsible phone details are implemented. Manual screen-reader/device checks and deployment remain for launch verification. The local prototype has not been deployed.
+All income geometries retain the source coordinates. The initial urban map met the five-second target in three emulated mobile runs; physical-phone and deployed-host checks remain pending. Fixed income bands are approved and configured in [data/income-bands.json](data/income-bands.json). Current civic-community boundaries differ in vintage and purpose from census units; HRM warns some await consultation. Search uses reviewed place points with direction, coordinate, and census-area labels. No verified aliases are available in the source inventory; unsupported names are explained. Community boundaries use the [documented point fallback](docs/adr/0002-place-point-navigation.md). Collapsible phone details are implemented. The release suite now checks 15 scenarios in three browser engines. Actual screen-reader/physical-device checks and deployed-host verification remain pending before launch. The local prototype has not been deployed.
 
 ## Source attribution
 

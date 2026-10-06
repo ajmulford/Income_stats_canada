@@ -28,6 +28,12 @@ export interface Band {
   upper_exclusive_cad: number | null;
 }
 export interface Index {
+  basemap: {
+    enabled: boolean;
+    url: string;
+    maxZoom: number;
+    attribution: string;
+  };
   city: string;
   incomeYear: number;
   censusYear: number;

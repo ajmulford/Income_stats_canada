@@ -23,6 +23,17 @@ for (const [name, expected] of Object.entries(manifest.files)) {
       `Validated artifact changed: ${name}. Rebuild the data pipeline.`,
     );
 }
+const reviewedRelease = JSON.parse(
+  await readFile(resolve("data/reviewed-release.json"), "utf8"),
+);
+if (
+  manifest.files["income.geojson"].sha256 !==
+    reviewedRelease.income_geojson_sha256 ||
+  manifest.files["income.csv"].sha256 !== reviewedRelease.income_csv_sha256
+)
+  throw new Error(
+    "Data differs from the reviewed release. Review data/reviewed-release.json before building.",
+  );
 const validation = await readJSON("validation.json");
 if (validation.status !== "validated")
   throw new Error("A validated milestone-one dataset is required.");
@@ -52,6 +63,17 @@ if (
   throw new Error(
     "Income bands must be ordered, continuous, and unbounded at the ends.",
   );
+const basemap = JSON.parse(
+  await readFile(resolve("data/basemap.json"), "utf8"),
+);
+if (
+  typeof basemap.enabled !== "boolean" ||
+  !basemap.url.startsWith("https://") ||
+  !["{x}", "{y}", "{z}"].every((token) => basemap.url.includes(token)) ||
+  !Number.isInteger(basemap.maxZoom) ||
+  !basemap.attribution
+)
+  throw new Error("Invalid replaceable basemap configuration.");
 const geojson = await readJSON("income.geojson");
 if (geojson.features.length !== validation.areas)
   throw new Error("Area count differs from validation.");
@@ -164,13 +186,15 @@ try {
     coverage: "Halifax municipal census subdivision 1209034",
     incomeYear: validation.income_reference_year,
     censusYear: validation.census_year,
-    snapshotDate: "2026-10-06",
+    snapshotDate: reviewedRelease.snapshot_date,
+    releaseId: reviewedRelease.release_id,
     sourceHash: manifest.files["income.geojson"].sha256,
     bounds: unionBounds(features),
     rows,
     places,
     chunks,
     incomeBands,
+    basemap,
     bandsApprovedDate: bandConfig.approved_date,
     searchPolicy: "place_points_only_boundary_finality_unverified",
   });

@@ -24,7 +24,13 @@ const profile = {
   cpu_slowdown: 4,
   cache: "disabled; new browser context per run",
 };
+const candidate = await readFile("dist/release.json", "utf8")
+  .then(JSON.parse)
+  .catch(() => null);
 const report = {
+  candidate_sha256: candidate?.candidate_sha256 ?? null,
+  measured_at: new Date().toISOString(),
+  url,
   browser: browser.version(),
   platform: process.platform,
   profile,
@@ -121,6 +127,8 @@ try {
     process.env.REPORT_PATH ?? "reports/mobile-performance.json",
     JSON.stringify(report, null, 2) + "\n",
   );
+  if (process.env.ENFORCE_TARGET === "1" && !report.all_chunked_runs_pass)
+    throw new Error("Mobile usability exceeds the five-second target.");
 } finally {
   await browser.close();
 }
