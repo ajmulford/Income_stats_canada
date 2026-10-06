@@ -76,6 +76,28 @@ test("nearby labels cover unmatched areas without overriding verified place matc
   await expect(page.locator("#details .area-location")).toHaveText(label);
 });
 
+test("map click reveals desktop details when the right column is scrolled", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await ready(page);
+  await page.locator("#area-list button").last().scrollIntoViewIfNeeded();
+  expect(await page.locator("#selection-panel").evaluate(el => el.getBoundingClientRect().bottom)).toBeLessThan(0);
+  const point = { lat: 44.645462989342825, lon: -63.59112404336591 };
+  const box = (await page.locator("#map").boundingBox())!;
+  const scale = 256 * 2 ** 13;
+  const y = (lat: number) => (1 - Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) / Math.PI) / 2;
+  await page.mouse.click(
+    box.x + box.width / 2 + (point.lon + 63.589) / 360 * scale,
+    box.y + box.height / 2 + (y(point.lat) - y(44.664)) * scale,
+  );
+  await expect(page.locator("#details-title")).toHaveText("Census area 12090312");
+  await expect.poll(async () => {
+    const heading = (await page.locator("#details-title").boundingBox())!;
+    const income = (await page.locator("#details .income-value").boundingBox())!;
+    return heading.y >= 0 && income.y + income.height <= 900;
+  }).toBe(true);
+  await expect(page.locator("#details-title")).toBeFocused();
+});
+
 test("real map click and accessible list select the same published area", async ({
   page,
 }) => {

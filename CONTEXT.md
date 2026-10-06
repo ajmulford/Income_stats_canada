@@ -106,6 +106,8 @@ A source quality flag applicable to a published income value that calls for caut
 
 - On desktop layouts, pointer activation of a census-list result reveals the details panel beside the map and focuses its selected-area heading. The sticky map already remained visible; details needed explicit document scrolling after selection. Keyboard activation keeps list focus.
 
+- Clicking a census area on the map also reveals its details, including when the desktop right column is scrolled below the panel. Revealing runs as soon as details render, independently of geometry loading or map navigation; map clicks retain the current camera.
+
 - Desktop area details are always open, with no collapse/expand control. Collapse/expand remains available on phone layouts; switching to desktop reopens previously collapsed details.
 
 - Census-list sorting supports area number and reported income in ascending/descending order. Filtering keeps the chosen sort, changing sort returns to the first page, and income ties use area number. Unavailable incomes stay last in both income directions; sorting never changes the selected area or source values.

@@ -167,7 +167,7 @@ async function loadChunk(chunk: Chunk): Promise<void> {
         const id = feature.properties.id;
         layers.set(id, layer as L.Path);
         layer.on("click", () => {
-          void selectArea(id, false);
+          void selectArea(id, false, true);
         });
       },
     }).addTo(incomeOverlay);
@@ -378,6 +378,7 @@ async function selectArea(id: string, navigate: boolean, revealMap = false) {
   if (before) layers.get(before)?.setStyle(style(before));
   renderDetails(row);
   renderList();
+  if (revealMap) revealSelectedView();
   const chunk = baseline
     ? {
         file: "all-areas.json",
@@ -393,7 +394,6 @@ async function selectArea(id: string, navigate: boolean, revealMap = false) {
     layer.setStyle(style(id));
     if (map.hasLayer(layer)) layer.bringToFront();
     if (navigate) {
-      if (revealMap) revealSelectedView();
       map.fitBounds(layer.getBounds(), {
         padding: [30, 30],
         maxZoom: 15,
