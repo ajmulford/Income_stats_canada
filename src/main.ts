@@ -1,4 +1,4 @@
-import { matchingPlaces, locationLabel } from "./place-search";
+import { normalizePlaceName } from "./place-search";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./style.css";
@@ -17,7 +17,6 @@ import type {
   Bounds,
   Chunk,
   Index,
-  Place,
 } from "./data";
 
 const element = <T extends HTMLElement>(id: string) => {
@@ -37,8 +36,9 @@ function node<K extends keyof HTMLElementTagNameMap>(
 }
 const status = element("map-status");
 const list = element("area-list");
-const filter = element<HTMLInputElement>("area-filter");
-const areaSort = element<HTMLSelectElement>("area-sort");
+const sortButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-sort]")];
+let sortColumn = "area";
+let sortDescending = false;
 const placeSearch = element<HTMLInputElement>("place-search");
 const previous = element<HTMLButtonElement>("previous-page");
 const next = element<HTMLButtonElement>("next-page");
@@ -99,7 +99,6 @@ let rows: Map<string, Area>;
 let selected: string | null = null;
 let currentPage = 0;
 let listRows: Area[] = [];
-let marker: L.CircleMarker | null = null;
 let loadingGeneration = 0;
 let tileLayer: L.TileLayer | null = null;
 const PAGE_SIZE = 30;
@@ -409,11 +408,16 @@ async function selectArea(id: string, navigate: boolean, revealMap = false) {
   }
 }
 function renderList() {
+  element("total-areas").textContent = String(listRows.length);
   listRows.sort((a, b) => {
-    const mode = areaSort.value;
+    const mode = `${sortColumn}-${sortDescending ? "desc" : "asc"}`;
     const byId = a.id.localeCompare(b.id);
     if (mode === "area-asc") return byId;
     if (mode === "area-desc") return -byId;
+    if (sortColumn === "place") {
+      const difference = areaPlaceLabel(a.id).localeCompare(areaPlaceLabel(b.id), "en-CA");
+      return (sortDescending ? -difference : difference) || byId;
+    }
     // Suppressed values are unknown, rather than zero, in either direction.
     if (a.income === null) return b.income === null ? byId : 1;
     if (b.income === null) return -1;
@@ -430,7 +434,7 @@ function renderList() {
   const current = listRows.slice(start, start + PAGE_SIZE);
   list.replaceChildren(
     ...current.map((row) => {
-      const item = node("li");
+      const item = node("tr");
       const button = node("button", "", "area-row");
       button.type = "button";
       button.dataset.areaId = row.id;
@@ -439,23 +443,30 @@ function renderList() {
       const identity = node("span", "", "area-identity");
       identity.append(label);
       const placeLabel = areaPlaceLabel(row.id);
-      if (placeLabel) identity.append(node("span", placeLabel, "area-place"));
+
       const income = node("span", rowLabel(row), "area-income");
       const text = `Census area ${row.id}, ${rowLabel(row)}${row.caution ? ", use with caution" : ""}${placeLabel ? `, ${placeLabel}` : ""}`;
       button.setAttribute("aria-label", text);
-      button.append(identity, income);
+      button.append(identity);
       if (row.caution) button.append(node("span", "Caution", "caution-badge"));
-      button.addEventListener("click", (event) => {
+      item.addEventListener("click", (event) => {
+        // Button activation bubbles here; each row has one keyboard selection control.
         // Pointer selection reveals the selected view; keyboard selection retains list focus.
         void selectArea(row.id, true, event.detail > 0);
       });
-      item.append(button);
+      const idCell = node("td");
+      idCell.append(button);
+      const placeCell = node("td", placeLabel.replace(/^Near or part of: /, ""), "area-place");
+      const incomeCell = node("td");
+      incomeCell.append(income);
+      item.append(idCell, placeCell, incomeCell);
+      item.classList.toggle("selected-area", selected === row.id);
       return item;
     }),
   );
   element("list-status").textContent = current.length
     ? `${start + 1}–${start + current.length} of ${listRows.length} areas`
-    : "No census areas match this number.";
+    : "No census areas match this name or number.";
   element("page-number").textContent = `Page ${currentPage + 1} of ${pages}`;
   previous.disabled = currentPage === 0;
   next.disabled = currentPage >= pages - 1;
@@ -490,72 +501,13 @@ function renderLegend(bands: Band[]) {
     })(),
   );
 }
-function selectPlace(place: Place, reveal = false) {
-  showSelectionPanel();
-  marker?.remove();
-  marker = L.circleMarker([place.lat, place.lon], {
-    radius: 6,
-    fillColor: "#fff",
-    color: "#172d29",
-    weight: 2,
-    fillOpacity: 1,
-  }).addTo(map);
-  const label = node("span", place.name);
-  marker.bindTooltip(label, { permanent: true, direction: "top" });
-  map.setView([place.lat, place.lon], 14, { animate: false });
-  if (place.areas.length === 1) {
-    void selectArea(place.areas[0], false);
-    element("place-status").textContent =
-      `Census area containing this place location: ${place.name}. This does not represent the entire community.`;
-  } else {
-    element("place-status").textContent =
-      `${place.name}: this place point has no single containing census area. No income has been assigned to this location; use the full area list.`;
-    selected = null;
-    for (const [id, layer] of layers) layer.setStyle(style(id));
-    element("details-title").textContent = "No containing census area";
-    element("details").replaceChildren(
-      node(
-        "p",
-        "This verified place location has no single census-area match. Choose an area from the list to inspect its reported income.",
-        "empty-description",
-      ),
-    );
-    renderList();
-  }
-  if (reveal) revealSelectedView();
-}
-function searchPlaces() {
+function filterAreas() {
   const text = placeSearch.value.trim();
-  const matches = matchingPlaces(index.places, text);
-  element("place-results").replaceChildren(
-    ...matches.slice(0, 10).map((place) => {
-      const item = node("li");
-      const button = node("button", "", "place-result");
-      button.type = "button";
-      // Directions compare verified source points; coordinates retain precise context.
-      button.append(
-        node("strong", place.name),
-        node("span", locationLabel(place, index.places)),
-      );
-      button.dataset.placeId = place.id;
-      button.append(
-        node(
-          "span",
-          place.areas.length === 1
-            ? `Census area ${place.areas[0]}`
-            : "Outside a single mapped census area",
-        ),
-      );
-      button.addEventListener("click", (event) => selectPlace(place, event.detail > 0));
-      item.append(button);
-      return item;
-    }),
-  );
-  element("place-status").textContent = !text
-    ? "Place locations identify a point, not a whole community."
-    : !matches.length
-      ? "No place locations match this name. Try a nearby community or browse the census area list; some neighbourhood names are absent from the source."
-      : `${matches.length} matching place locations${matches.length > 10 ? "; showing the first 10. Refine your search to see others" : ""}. Choose a location.`;
+  const normalized = normalizePlaceName(text);
+  listRows = index.rows.filter(row => !normalized || row.id.includes(text) ||
+    normalizePlaceName(areaPlaceLabel(row.id)).includes(normalized));
+  currentPage = 0;
+  renderList();
 }
 async function initialise() {
   try {
@@ -575,26 +527,28 @@ async function initialise() {
     listRows = [...index.rows];
     renderList();
     renderLegend(index.incomeBands);
-    element("total-areas").textContent = String(index.rows.length);
-    filter.disabled = false;
-    areaSort.disabled = false;
-    areaSort.addEventListener("change", () => {
-      currentPage = 0;
-      renderList();
-    });
+    for (const button of sortButtons) {
+      button.disabled = false;
+      button.addEventListener("click", () => {
+        const column = button.dataset.sort!;
+        sortDescending = sortColumn === column ? !sortDescending : column === "income";
+        sortColumn = column;
+        for (const control of sortButtons) {
+          const active = control === button;
+          if (active) control.parentElement!.setAttribute("aria-sort", sortDescending ? "descending" : "ascending");
+          else control.parentElement!.removeAttribute("aria-sort");
+          control.querySelector("span")!.textContent = active ? (sortDescending ? "↓" : "↑") : "↕";
+        }
+        currentPage = 0;
+        renderList();
+      });
+    }
     placeSearch.disabled = false;
     const download = element<HTMLAnchorElement>("download-csv");
     download.href = dataURL("income.csv");
     download.download = "hrm-income-2020.csv";
     download.removeAttribute("aria-disabled");
-    filter.addEventListener("input", () => {
-      currentPage = 0;
-      listRows = index.rows.filter((row) =>
-        row.id.includes(filter.value.trim()),
-      );
-      renderList();
-    });
-    placeSearch.addEventListener("input", searchPlaces);
+    placeSearch.addEventListener("input", filterAreas);
     previous.addEventListener("click", () => {
       currentPage--;
       renderList();

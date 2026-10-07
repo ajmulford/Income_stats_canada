@@ -122,51 +122,26 @@
               </p>
             </div>
           </section>
-          <section class="search-panel" aria-labelledby="place-title">
-            <h2 id="place-title">Find a place</h2>
-            <label class="sr-only" for="place-search"
-              >Community or place name</label
-            ><input
-              id="place-search"
-              type="search"
-              placeholder="Try Bedford or Sheet Harbour"
-              autocomplete="off"
-              disabled
-            />
-            <p id="place-status" class="small-note" role="status">
-              Place locations identify a point, not a whole community.
-            </p>
-            <ul id="place-results"></ul>
-          </section>
           <section class="areas-panel" aria-labelledby="area-list-title">
             <div class="list-heading">
-              <h2 id="area-list-title">Census areas</h2>
+              <h2 id="area-list-title">Find a place or census area</h2>
               <span id="total-areas">—</span>
             </div>
-            <label class="sr-only" for="area-filter"
-              >Filter census areas by identifier</label
-            ><input
-              id="area-filter"
-              type="search"
-              placeholder="Filter by census area number"
-              autocomplete="off"
-              disabled
-            />
-            <label class="sort-label" for="area-sort">Sort census areas</label>
-            <select id="area-sort" disabled>
-              <option value="area-asc">Area number: low to high</option>
-              <option value="area-desc">Area number: high to low</option>
-              <option value="income-desc">Income: high to low</option>
-              <option value="income-asc">Income: low to high</option>
-            </select>
+            <label class="sr-only" for="place-search">Place name or census area number</label>
+            <input id="place-search" type="search" placeholder="Try Bedford or a census area number" autocomplete="off" aria-describedby="place-status" disabled />
+            <p id="place-status" class="small-note" role="status">Search by place name, nearby place, or census area number. Names help locate census areas; they do not define community boundaries.</p>
             <p id="list-status" class="small-note" role="status">
               Loading the area list…
             </p>
-            <ul
-              id="area-list"
-              tabindex="-1"
-              aria-label="Census areas and their reported incomes"
-            ></ul>
+            <table class="area-table">
+              <caption class="sr-only">Census areas and their reported incomes. Activate a column header to sort.</caption>
+              <thead><tr>
+                <th scope="col" aria-sort="ascending"><button type="button" data-sort="area" disabled>Census area <span aria-hidden="true">↑</span></button></th>
+                <th scope="col"><button type="button" data-sort="place" disabled>Near or part of <span aria-hidden="true">↕</span></button></th>
+                <th scope="col"><button type="button" data-sort="income" disabled>Income <span aria-hidden="true">↕</span></button></th>
+              </tr></thead>
+              <tbody id="area-list" tabindex="-1"></tbody>
+            </table>
             <nav class="pagination" aria-label="Census area list pages">
               <button id="previous-page" type="button" disabled>Previous</button
               ><span id="page-number">—</span
@@ -211,12 +186,10 @@
               Halifax municipal census subdivision used here.
             </p>
             <p>
-              Place lookup uses verified GeoSuite point records. Civic-community
-              boundaries have unresolved consultation status, so search uses
-              place points. Duplicate names show separate locations. A point
-              identifies its containing census area, without assigning income to
-              an entire community. Try a more specific name if the result is
-              ambiguous; commonly used neighbourhood names may be absent.
+              Place names use verified GeoSuite point records. Search includes
+              names linked within census areas and approximate nearby place
+              labels. These names help locate areas without assigning income to
+              an entire community. Commonly used neighbourhood names may be absent.
             </p>
             <p>
               <a

@@ -36,7 +36,7 @@ const report = {
   profile,
   target_ms: 5000,
   start: "navigationStart",
-  end: "Index, place lookup, accessible list, and all viewport geometry loaded; two animation frames painted",
+  end: "Index, shared area search, accessible table, and all viewport geometry loaded; two animation frames painted",
   basemap: "disabled: external tiles are excluded and no OSM requests are made",
   source_hash: createHash("sha256")
     .update(await readFile("data/processed/hrm/income.geojson"))
@@ -88,7 +88,7 @@ try {
     // Readiness is followed by a genuine selection, not only a stopwatch marker.
     const selectionStart = Date.now();
     await page
-      .getByRole("searchbox", { name: "Filter census areas by identifier" })
+      .getByRole("searchbox", { name: "Place name or census area number" })
       .fill("12090312");
     await page
       .getByRole("button", {

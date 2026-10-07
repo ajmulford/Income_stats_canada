@@ -30,7 +30,7 @@ Record the actual device, operating system, browser/version, tester, date/time, 
 1. Open the map; confirm the 2020 income / 2021 Census / CAD labels and usable legend without horizontal scrolling.
 2. Tap an income polygon. Read its amount and identifier in the bottom panel; collapse/reopen it. Pan/zoom the map and check that map controls remain reachable and attribution visible.
 3. Filter the census-area list to `12090312`; select it and confirm **$50,800**. Filter to `12090104`; confirm **Income unavailable** and a confidentiality explanation, never zero.
-4. Search **Bedford** and choose one of its labelled locations. Search **Sheet Harbour** and verify rural navigation. Search **Terence Bay** and choose the result marked outside a single mapped area; confirm no income is assigned to that point.
+4. Search **Bedford** and choose a matching census-area row. Search **Sheet Harbour** and verify rural navigation. Confirm the heading count follows the search, clearing restores all areas, and each table column sorts in both directions. Tap place and income cells to verify full-row selection.
 5. Use **Show all HRM**, then **Urban view**. Open the official source and download the CSV. Scroll the details panel to reach all notes and its source link.
 6. Repeat selection/search with `?basemap=off`; income and place navigation must remain usable. Actual tile-failure recovery is also covered by the automated suite, whose requests are blocked before reaching OSM.
 
@@ -41,7 +41,7 @@ Use an actual screen reader/browser pair, preferably VoiceOver with Safari on ma
 1. Navigate headings and use the skip link to reach the census-area list.
 2. Find the named census-area filter, enter `12090312`, and activate its result using the screen reader/keyboard. Confirm the selected identifier and **$50,800** are announced and result focus remains usable.
 3. Select suppressed `12090104`; confirm unavailable income and its explanation are announced clearly. Check that income is not conveyed solely by colour.
-4. Search Bedford, navigate the two distinguishable results, and choose one. Confirm search/selection status is announced, without an unsolicited first-result selection. Check the uncontained Terence Bay explanation as well.
+4. Search Bedford, navigate matching table rows, and activate an area. Confirm result status is announced without automatic selection. Activate each column header with Enter/Space and confirm its sort direction is announced. Verify row selection retains keyboard focus.
 5. On a phone, navigate collapse/expand and the panel source link. With a desktop keyboard, check Escape when using the phone layout, list pagination, source/download links, and visible focus.
 
 If any step fails, record it and fix the issue before passing the check. Combining the physical-phone and screen-reader checks on the same phone is acceptable if all steps are exercised.
@@ -85,3 +85,5 @@ For the mainland overview and overlay-controls update, Alex approved the impleme
 For the selection visibility, desktop static details, sorting, and place-suggestion update, Alex confirmed the fixes and explicitly requested deployment. Prior physical evidence retains original provenance; no repeated device test is claimed. Fresh browser and performance evidence applies to the new candidate.
 
 For the place-label and map-click visibility update, Alex reviewed the labels, confirmed the details fix works, and explicitly requested commit and deployment. Original Pixel/TalkBack evidence retains its tested-candidate provenance; no repeated physical-device test is claimed. Fresh three-engine browser checks and candidate-bound mobile measurements apply to this release.
+
+For the merged search and census-table update, Alex reviewed the revisions and explicitly requested commit and deployment. Original Pixel/TalkBack evidence retains its tested-candidate provenance; no repeated physical-device test is claimed. Fresh three-engine browser checks, keyboard sorting, Axe checks, and candidate-bound mobile measurements apply.
