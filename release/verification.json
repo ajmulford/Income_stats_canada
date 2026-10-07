@@ -1,5 +1,5 @@
 {
-  "candidate_sha256": "879716531e4e9efc834f5d3a98c71e4dede2b548be290aab39f8ab7df0b38ff3",
+  "candidate_sha256": "026b76bd9e3d15a3b7785591344bf38fe1ff02654639d4db78b4661d1aad3c33",
   "checks": [
     {
       "name": "physical_phone",
@@ -19,11 +19,11 @@
     }
   ],
   "manual_evidence_disposition": {
-    "type": "user_approved_merged_search_and_census_table_update",
+    "type": "user_approved_compact_settings_and_table_navigation_update",
     "previously_tested_candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
-    "change": "Shared search filters census areas by ID and linked or nearby place names; no suggestion dropdown; accessible column sorting, filtered heading count, full-row selection, and vertical alignment.",
-    "authorization": "Alex reviewed the successive interface revisions and explicitly requested commit and deployment. Alex requested notification when deployment is queued, without waiting for completion.",
+    "change": "Closed-by-default toolbar Settings dropdown overlays the map and dismisses on focus departure or outside click; pagination scrolls to table top and focuses first result; focus and selection styles encompass the full row.",
+    "authorization": "Alex reviewed the implemented revisions and explicitly requested commit and deployment. Notify when publication is queued, without waiting for completion.",
     "new_physical_checks_performed": false,
-    "automated_verification": "108 browser scenarios across Chromium, Firefox and WebKit; Safari focus test corrected to use keyboard activation and passed in all three engines; seven release-gate tests; fresh candidate-bound mobile measurements."
+    "automated_verification": "117 browser checks across Chromium, Firefox, and WebKit; seven release-gate tests; fresh candidate-bound mobile measurements."
   }
 }
