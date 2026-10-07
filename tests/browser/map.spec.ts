@@ -503,6 +503,16 @@ for (const width of [390, 768, 1280, 1920]) {
 
 test("income overlay toggles completely and opacity remains adjustable after navigation", async ({ page }) => {
   await ready(page);
+  const settings = page.locator(".map-settings");
+  await expect(settings).not.toHaveAttribute("open", "");
+  await expect(page.locator("#show-income")).toBeHidden();
+  await expect(page.locator("#income-opacity")).toBeHidden();
+  const mapBefore = await page.locator(".map-frame").boundingBox();
+  await settings.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(settings).toHaveAttribute("open", "");
+  const mapAfter = await page.locator(".map-frame").boundingBox();
+  expect(mapAfter).toEqual(mapBefore);
   const toggle = page.getByRole("checkbox", {name: "Show income data"});
   const slider = page.getByRole("slider", {name: "Colour opacity"});
   const canvas = page.locator("#map canvas").first();
@@ -530,9 +540,15 @@ test("income overlay toggles completely and opacity remains adjustable after nav
   await page.getByRole("button", {name:"Census area 12090312, $50,800"}).click();
   await expect(page.locator("#details .income-value")).toHaveText("$50,800");
   await expect.poll(ink).toBe(0);
+  await settings.locator("summary").click();
   await toggle.check();
   await expect(slider).toBeEnabled();
   await expect(slider).toHaveValue("100");
+  await settings.locator("summary").click();
+  await expect(slider).toBeHidden();
+  await settings.locator("summary").click();
+  await expect(slider).toHaveValue("100");
+  await expect(toggle).toBeChecked();
   await expect.poll(ink).toBeGreaterThan(0);
   await expect(page.locator("#details .income-value")).toHaveText("$50,800");
   await slider.focus();
@@ -721,3 +737,44 @@ test("entire census result row selects from every cell and supports keyboard act
     await expect(button).toHaveAttribute("aria-pressed", "true");
   }
 });
+
+
+test("settings closes when focus or a pointer moves outside while retaining values", async ({page}) => {
+  await ready(page);
+  const settings = page.locator(".map-settings");
+  const summary = settings.locator("summary");
+  const slider = page.locator("#income-opacity");
+  await summary.focus();
+  await page.keyboard.press("Enter");
+  await page.locator("#show-income").focus();
+  await expect(settings).toHaveAttribute("open", "");
+  await slider.focus();
+  await page.keyboard.press("End");
+  await expect(settings).toHaveAttribute("open", "");
+  await page.keyboard.press("Tab");
+  await expect(settings).not.toHaveAttribute("open", "");
+  await summary.click();
+  await expect(slider).toHaveValue("100");
+  await page.locator("#map-title").click();
+  await expect(settings).not.toHaveAttribute("open", "");
+});
+
+
+for (const width of [390, 1280]) {
+  test(`pagination returns to the table top at width ${width}`, async ({page}) => {
+    await page.setViewportSize({width, height:844});
+    await ready(page);
+    for (const name of ["Next", "Previous"]) {
+      const control = page.getByRole("button", {name, exact:true});
+      await control.scrollIntoViewIfNeeded();
+      await control.click();
+      await expect(page.locator("#page-number")).toHaveText(name === "Next" ? "Page 2 of 21" : "Page 1 of 21");
+      await expect(page.locator("#area-list button").first()).toBeFocused();
+      await expect.poll(async () => {
+        const box = (await page.locator(".area-table").boundingBox())!;
+        return box.y >= 0 && box.y < 40;
+      }).toBe(true);
+
+    }
+  });
+}

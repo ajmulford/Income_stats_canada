@@ -46,16 +46,19 @@
             <div class="map-actions">
               <button id="urban-view" type="button">Urban view</button
               ><button id="full-view" type="button">Show all HRM</button>
-            </div>
-          </div>
-          <div class="overlay-controls" aria-label="Income map display">
-            <label class="overlay-toggle" for="show-income">
-              <input id="show-income" type="checkbox" checked /> Show income data
-            </label>
-            <div class="opacity-control">
-              <label for="income-opacity">Colour opacity</label>
-              <input id="income-opacity" type="range" min="0" max="100" step="5" value="45" aria-valuetext="45 percent" />
-              <output id="opacity-value" for="income-opacity">45%</output>
+              <details class="map-settings">
+                <summary>Settings</summary>
+                <div class="overlay-controls" role="group" aria-label="Income map display">
+                  <label class="overlay-toggle" for="show-income">
+                    <input id="show-income" type="checkbox" checked /> Show income data
+                  </label>
+                  <div class="opacity-control">
+                    <label for="income-opacity">Colour opacity</label>
+                    <input id="income-opacity" type="range" min="0" max="100" step="5" value="45" aria-valuetext="45 percent" />
+                    <output id="opacity-value" for="income-opacity">45%</output>
+                  </div>
+                </div>
+              </details>
             </div>
           </div>
           <div class="map-frame">

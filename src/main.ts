@@ -84,6 +84,21 @@ const incomeOverlay = L.layerGroup().addTo(map);
 let incomeOpacity = 0.45;
 const overlayToggle = element<HTMLInputElement>("show-income");
 const opacityControl = element<HTMLInputElement>("income-opacity");
+const settings = document.querySelector<HTMLDetailsElement>(".map-settings")!;
+let settingsPointerInside = false;
+settings.addEventListener("focusout", (event) => {
+  // Safari can blur a slider without focusing the checkbox clicked beside it.
+  if (!event.relatedTarget && settingsPointerInside) return;
+  if (!(event.relatedTarget instanceof Node) || !settings.contains(event.relatedTarget))
+    settings.open = false;
+});
+document.addEventListener("pointerdown", (event) => {
+  settingsPointerInside = event.target instanceof Node && settings.contains(event.target);
+  if (!settingsPointerInside) settings.open = false;
+});
+const clearSettingsPointer = () => { settingsPointerInside = false; };
+document.addEventListener("pointerup", clearSettingsPointer);
+document.addEventListener("pointercancel", clearSettingsPointer);
 const layers = new Map<string, L.Path>();
 const inFlight = new Map<string, Promise<void>>();
 const loaded = new Set<string>();
@@ -475,6 +490,12 @@ function renderList() {
       .querySelector<HTMLButtonElement>(`button[data-area-id="${focusedId}"]`)
       ?.focus({ preventScroll: true });
 }
+function changeListPage(direction: number) {
+  currentPage += direction;
+  renderList();
+  list.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
+  list.closest("table")!.scrollIntoView({ block: "start", behavior: "instant" });
+}
 function renderLegend(bands: Band[]) {
   element("legend-bands").replaceChildren(
     ...bands.map((band, i) => {
@@ -549,14 +570,8 @@ async function initialise() {
     download.download = "hrm-income-2020.csv";
     download.removeAttribute("aria-disabled");
     placeSearch.addEventListener("input", filterAreas);
-    previous.addEventListener("click", () => {
-      currentPage--;
-      renderList();
-    });
-    next.addEventListener("click", () => {
-      currentPage++;
-      renderList();
-    });
+    previous.addEventListener("click", () => changeListPage(-1));
+    next.addEventListener("click", () => changeListPage(1));
     element("full-view").addEventListener("click", () =>
       map.fitBounds(leafletBounds(index.overviewBounds), {
         padding: [16, 16],
