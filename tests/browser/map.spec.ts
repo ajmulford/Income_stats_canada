@@ -646,7 +646,7 @@ test("phone sort control stays reachable above expanded details", async ({page})
     const panel = (await page.locator("#selection-panel").boundingBox())!;
     return control.y >= 0 && control.y + control.height < panel.y;
   }).toBe(true);
-  await sort.click();
+  await page.keyboard.press("Enter");
   await expect(sort).toBeFocused();
   await expect(page.locator("#details .income-value")).toHaveText("$50,800");
 });

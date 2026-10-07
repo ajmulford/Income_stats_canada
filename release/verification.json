@@ -1,5 +1,5 @@
 {
-  "candidate_sha256": "a21f2b73221f0af92f5c4c9b4f8566bd14701116d3aad62fcc02528683ff9cff",
+  "candidate_sha256": "879716531e4e9efc834f5d3a98c71e4dede2b548be290aab39f8ab7df0b38ff3",
   "checks": [
     {
       "name": "physical_phone",
@@ -19,11 +19,11 @@
     }
   ],
   "manual_evidence_disposition": {
-    "type": "user_approved_place_labels_and_map_selection_update",
+    "type": "user_approved_merged_search_and_census_table_update",
     "previously_tested_candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
-    "change": "Verified and approximate place labels use Near or part of; map clicks reveal off-screen details independently of navigation.",
-    "authorization": "Alex confirmed the map-click fix works and explicitly requested commit and deployment, following review of the place-label updates.",
+    "change": "Shared search filters census areas by ID and linked or nearby place names; no suggestion dropdown; accessible column sorting, filtered heading count, full-row selection, and vertical alignment.",
+    "authorization": "Alex reviewed the successive interface revisions and explicitly requested commit and deployment. Alex requested notification when deployment is queued, without waiting for completion.",
     "new_physical_checks_performed": false,
-    "automated_verification": "102 browser checks across Chromium, Firefox and WebKit; seven release-gate tests; fresh candidate-bound mobile measurements."
+    "automated_verification": "108 browser scenarios across Chromium, Firefox and WebKit; Safari focus test corrected to use keyboard activation and passed in all three engines; seven release-gate tests; fresh candidate-bound mobile measurements."
   }
 }
