@@ -1,8 +1,8 @@
 {
-  "candidate_sha256": "026b76bd9e3d15a3b7785591344bf38fe1ff02654639d4db78b4661d1aad3c33",
-  "measured_at": "2026-10-07T00:47:29.728Z",
+  "candidate_sha256": "d857d24a7ddc6ce2d16e8efda62a5d1fc1be622c1ce709fe4ed2bf9b0861937e",
+  "measured_at": "2026-10-14T19:25:52.349Z",
   "url": "http://127.0.0.1:4173",
-  "browser": "154.0.8037.98",
+  "browser": "155.0.8059.40",
   "platform": "darwin",
   "profile": {
     "viewport": {
@@ -28,479 +28,479 @@
   "runs": [
     {
       "mode": "all",
-      "usable_ms": 14143.299999952316,
-      "index_ready_ms": 1061.7000000476837,
+      "usable_ms": 14110.600000023842,
+      "index_ready_ms": 1030.1000000238419,
       "resources": [
         {
-          "name": "index-Cuq5cVr7.js",
-          "bytes": 48999,
-          "duration_ms": 457
+          "name": "index-C42Ohn9t.js",
+          "bytes": 49650,
+          "duration_ms": 453.2999999821186
         },
         {
           "name": "index-Cbe7NdUc.css",
           "bytes": 10211,
-          "duration_ms": 255.70000004768372
+          "duration_ms": 242.80000001192093
         },
         {
           "name": "index.json.gz",
           "bytes": 26257,
-          "duration_ms": 301.10000014305115
+          "duration_ms": 291
         },
         {
           "name": "favicon.ico",
           "bytes": 300,
-          "duration_ms": 156.80000019073486
+          "duration_ms": 160.90000000596046
         },
         {
           "name": "all-areas.json.gz",
           "bytes": 2544688,
-          "duration_ms": 12880.399999856949
+          "duration_ms": 12880.90000000596
         }
       ],
       "passes_target": false,
-      "selection_ms": 293,
+      "selection_ms": 257,
       "selected_area": "12090312",
       "selected_income": "$50,800"
     },
     {
       "mode": "chunked",
-      "usable_ms": 3405.100000143051,
-      "index_ready_ms": 989.2999999523163,
+      "usable_ms": 3406.300000011921,
+      "index_ready_ms": 989,
       "resources": [
         {
-          "name": "index-Cuq5cVr7.js",
-          "bytes": 48999,
-          "duration_ms": 453
+          "name": "index-C42Ohn9t.js",
+          "bytes": 49650,
+          "duration_ms": 462.59999999403954
         },
         {
           "name": "index-Cbe7NdUc.css",
           "bytes": 10211,
-          "duration_ms": 250
+          "duration_ms": 251.90000000596046
         },
         {
           "name": "index.json.gz",
           "bytes": 26257,
-          "duration_ms": 289.10000014305115
+          "duration_ms": 288.59999999403954
         },
         {
           "name": "areas-10.json.gz",
           "bytes": 16040,
-          "duration_ms": 477.7000000476837
+          "duration_ms": 470.19999998807907
         },
         {
           "name": "areas-11.json.gz",
           "bytes": 17606,
-          "duration_ms": 499
-        },
-        {
-          "name": "areas-12.json.gz",
-          "bytes": 8757,
-          "duration_ms": 379.7999999523163
-        },
-        {
-          "name": "areas-13.json.gz",
-          "bytes": 9691,
-          "duration_ms": 425.90000009536743
+          "duration_ms": 492.69999998807907
         },
         {
           "name": "areas-14.json.gz",
           "bytes": 4820,
-          "duration_ms": 325.89999985694885
+          "duration_ms": 319.5
+        },
+        {
+          "name": "areas-12.json.gz",
+          "bytes": 8757,
+          "duration_ms": 380.80000001192093
+        },
+        {
+          "name": "areas-13.json.gz",
+          "bytes": 9691,
+          "duration_ms": 417.59999999403954
         },
         {
           "name": "areas-15.json.gz",
           "bytes": 6438,
-          "duration_ms": 372.2999999523163
+          "duration_ms": 364.09999999403954
         },
         {
           "name": "areas-25.json.gz",
           "bytes": 14840,
-          "duration_ms": 659.0999999046326
-        },
-        {
-          "name": "areas-34.json.gz",
-          "bytes": 5090,
-          "duration_ms": 618.5
-        },
-        {
-          "name": "areas-35.json.gz",
-          "bytes": 3148,
-          "duration_ms": 663.7999999523163
+          "duration_ms": 642
         },
         {
           "name": "areas-26.json.gz",
           "bytes": 25229,
-          "duration_ms": 813.3999998569489
+          "duration_ms": 783.7999999821186
+        },
+        {
+          "name": "areas-34.json.gz",
+          "bytes": 5090,
+          "duration_ms": 633.8000000119209
+        },
+        {
+          "name": "areas-35.json.gz",
+          "bytes": 3148,
+          "duration_ms": 649.4000000059605
         },
         {
           "name": "areas-36.json.gz",
           "bytes": 3215,
-          "duration_ms": 709.7999999523163
+          "duration_ms": 702
         },
         {
           "name": "areas-37.json.gz",
           "bytes": 3600,
-          "duration_ms": 725.4000000953674
+          "duration_ms": 716.3000000119209
         },
         {
           "name": "areas-38.json.gz",
           "bytes": 7160,
-          "duration_ms": 841.5999999046326
+          "duration_ms": 873.7999999821186
         },
         {
           "name": "areas-39.json.gz",
           "bytes": 9899,
-          "duration_ms": 979.2999999523163
+          "duration_ms": 955.5
         },
         {
           "name": "areas-40.json.gz",
           "bytes": 10079,
-          "duration_ms": 984
+          "duration_ms": 985.5999999940395
         },
         {
           "name": "areas-41.json.gz",
           "bytes": 8682,
-          "duration_ms": 1039.1000001430511
+          "duration_ms": 1029.199999988079
         },
         {
           "name": "areas-42.json.gz",
           "bytes": 13350,
-          "duration_ms": 1128.1000001430511
-        },
-        {
-          "name": "areas-44.json.gz",
-          "bytes": 10390,
-          "duration_ms": 1165.5
+          "duration_ms": 1104.9000000059605
         },
         {
           "name": "areas-43.json.gz",
           "bytes": 14571,
-          "duration_ms": 1224.0999999046326
+          "duration_ms": 1187.4000000059605
+        },
+        {
+          "name": "areas-44.json.gz",
+          "bytes": 10390,
+          "duration_ms": 1201.9000000059605
         },
         {
           "name": "areas-45.json.gz",
           "bytes": 11135,
-          "duration_ms": 1330.6999998092651
+          "duration_ms": 1322.9000000059605
         },
         {
           "name": "areas-46.json.gz",
           "bytes": 16363,
-          "duration_ms": 1451.7000000476837
+          "duration_ms": 1442.5999999940395
         },
         {
           "name": "areas-47.json.gz",
           "bytes": 75016,
-          "duration_ms": 2162.2000000476837
+          "duration_ms": 2148
         },
         {
           "name": "areas-55.json.gz",
           "bytes": 23691,
-          "duration_ms": 1682.1000001430511
+          "duration_ms": 1659.7999999821186
         },
         {
           "name": "areas-59.json.gz",
           "bytes": 114572,
-          "duration_ms": 2393.7999999523163
+          "duration_ms": 2386.4000000059605
         }
       ],
       "passes_target": true,
-      "selection_ms": 121,
+      "selection_ms": 126,
       "selected_area": "12090312",
       "selected_income": "$50,800"
     },
     {
       "mode": "chunked",
-      "usable_ms": 3414,
-      "index_ready_ms": 998.0999999046326,
+      "usable_ms": 3406.2999999821186,
+      "index_ready_ms": 985.9000000059605,
       "resources": [
         {
-          "name": "index-Cuq5cVr7.js",
-          "bytes": 48999,
-          "duration_ms": 459.10000014305115
+          "name": "index-C42Ohn9t.js",
+          "bytes": 49650,
+          "duration_ms": 461.7000000178814
         },
         {
           "name": "index-Cbe7NdUc.css",
           "bytes": 10211,
-          "duration_ms": 256.2000000476837
+          "duration_ms": 251.09999999403954
         },
         {
           "name": "index.json.gz",
           "bytes": 26257,
-          "duration_ms": 288.7000000476837
+          "duration_ms": 284.69999998807907
         },
         {
           "name": "areas-10.json.gz",
           "bytes": 16040,
-          "duration_ms": 467.7999999523163
-        },
-        {
-          "name": "areas-11.json.gz",
-          "bytes": 17606,
-          "duration_ms": 490.5
-        },
-        {
-          "name": "areas-14.json.gz",
-          "bytes": 4820,
-          "duration_ms": 317.59999990463257
+          "duration_ms": 473.80000001192093
         },
         {
           "name": "areas-12.json.gz",
           "bytes": 8757,
-          "duration_ms": 385.2000000476837
+          "duration_ms": 390.7999999821186
         },
         {
           "name": "areas-13.json.gz",
           "bytes": 9691,
-          "duration_ms": 415.2000000476837
+          "duration_ms": 419.59999999403954
+        },
+        {
+          "name": "areas-11.json.gz",
+          "bytes": 17606,
+          "duration_ms": 495.2999999821186
+        },
+        {
+          "name": "areas-14.json.gz",
+          "bytes": 4820,
+          "duration_ms": 322.90000000596046
         },
         {
           "name": "areas-15.json.gz",
           "bytes": 6438,
-          "duration_ms": 363.7000000476837
+          "duration_ms": 367
         },
         {
           "name": "areas-34.json.gz",
           "bytes": 5090,
-          "duration_ms": 635.2999999523163
+          "duration_ms": 636.5999999940395
         },
         {
           "name": "areas-25.json.gz",
           "bytes": 14840,
-          "duration_ms": 641.1999998092651
-        },
-        {
-          "name": "areas-26.json.gz",
-          "bytes": 25229,
-          "duration_ms": 784.7999999523163
+          "duration_ms": 643.8999999761581
         },
         {
           "name": "areas-35.json.gz",
           "bytes": 3148,
-          "duration_ms": 657
+          "duration_ms": 652.1999999880791
+        },
+        {
+          "name": "areas-26.json.gz",
+          "bytes": 25229,
+          "duration_ms": 786.0999999940395
         },
         {
           "name": "areas-36.json.gz",
           "bytes": 3215,
-          "duration_ms": 700.6999998092651
+          "duration_ms": 702.6999999880791
         },
         {
           "name": "areas-37.json.gz",
           "bytes": 3600,
-          "duration_ms": 715.2999999523163
+          "duration_ms": 718.1999999880791
         },
         {
           "name": "areas-38.json.gz",
           "bytes": 7160,
-          "duration_ms": 864.2999999523163
+          "duration_ms": 883.1999999880791
         },
         {
           "name": "areas-39.json.gz",
           "bytes": 9899,
-          "duration_ms": 947.5
+          "duration_ms": 950.2000000178814
         },
         {
           "name": "areas-40.json.gz",
           "bytes": 10079,
-          "duration_ms": 998.7000000476837
+          "duration_ms": 989.0999999940395
         },
         {
           "name": "areas-41.json.gz",
           "bytes": 8682,
-          "duration_ms": 1028.6000001430511
+          "duration_ms": 1032.5
         },
         {
           "name": "areas-42.json.gz",
           "bytes": 13350,
-          "duration_ms": 1106.1000001430511
+          "duration_ms": 1115.9000000059605
         },
         {
           "name": "areas-43.json.gz",
           "bytes": 14571,
-          "duration_ms": 1193.5999999046326
+          "duration_ms": 1190.5999999940395
         },
         {
           "name": "areas-44.json.gz",
           "bytes": 10390,
-          "duration_ms": 1187.4000000953674
+          "duration_ms": 1219.699999988079
         },
         {
           "name": "areas-45.json.gz",
           "bytes": 11135,
-          "duration_ms": 1320.5999999046326
+          "duration_ms": 1310.699999988079
         },
         {
           "name": "areas-46.json.gz",
           "bytes": 16363,
-          "duration_ms": 1443.3999998569489
+          "duration_ms": 1444.199999988079
         },
         {
           "name": "areas-47.json.gz",
           "bytes": 75016,
-          "duration_ms": 2139.5999999046326
+          "duration_ms": 2142
         },
         {
           "name": "areas-55.json.gz",
           "bytes": 23691,
-          "duration_ms": 1665.5
+          "duration_ms": 1669.0999999940395
         },
         {
           "name": "areas-59.json.gz",
           "bytes": 114572,
-          "duration_ms": 2386.9000000953674
+          "duration_ms": 2390.300000011921
         }
       ],
       "passes_target": true,
-      "selection_ms": 116,
+      "selection_ms": 122,
       "selected_area": "12090312",
       "selected_income": "$50,800"
     },
     {
       "mode": "chunked",
-      "usable_ms": 3385.7999999523163,
-      "index_ready_ms": 977.7999999523163,
+      "usable_ms": 3378.7999999821186,
+      "index_ready_ms": 972.9000000059605,
       "resources": [
         {
-          "name": "index-Cuq5cVr7.js",
-          "bytes": 48999,
-          "duration_ms": 448.69999980926514
+          "name": "index-C42Ohn9t.js",
+          "bytes": 49650,
+          "duration_ms": 452
         },
         {
           "name": "index-Cbe7NdUc.css",
           "bytes": 10211,
-          "duration_ms": 244.29999995231628
+          "duration_ms": 241.69999998807907
         },
         {
           "name": "index.json.gz",
           "bytes": 26257,
-          "duration_ms": 288.2000000476837
+          "duration_ms": 282.59999999403954
         },
         {
           "name": "areas-10.json.gz",
           "bytes": 16040,
-          "duration_ms": 473.2999999523163
-        },
-        {
-          "name": "areas-11.json.gz",
-          "bytes": 17606,
-          "duration_ms": 497.30000019073486
+          "duration_ms": 470.7000000178814
         },
         {
           "name": "areas-12.json.gz",
           "bytes": 8757,
-          "duration_ms": 375.59999990463257
+          "duration_ms": 380.59999999403954
         },
         {
-          "name": "areas-14.json.gz",
-          "bytes": 4820,
-          "duration_ms": 323.40000009536743
-        },
-        {
-          "name": "areas-15.json.gz",
-          "bytes": 6438,
-          "duration_ms": 367.60000014305115
+          "name": "areas-11.json.gz",
+          "bytes": 17606,
+          "duration_ms": 494.39999997615814
         },
         {
           "name": "areas-13.json.gz",
           "bytes": 9691,
-          "duration_ms": 422.7000000476837
+          "duration_ms": 419.2999999821186
+        },
+        {
+          "name": "areas-14.json.gz",
+          "bytes": 4820,
+          "duration_ms": 320.40000000596046
+        },
+        {
+          "name": "areas-15.json.gz",
+          "bytes": 6438,
+          "duration_ms": 364.60000002384186
         },
         {
           "name": "areas-25.json.gz",
           "bytes": 14840,
-          "duration_ms": 668.7999999523163
+          "duration_ms": 665.8999999761581
         },
         {
           "name": "areas-26.json.gz",
           "bytes": 25229,
-          "duration_ms": 796.8999998569489
+          "duration_ms": 793.5999999940395
         },
         {
           "name": "areas-34.json.gz",
           "bytes": 5090,
-          "duration_ms": 624.4000000953674
+          "duration_ms": 620.1999999880791
         },
         {
           "name": "areas-35.json.gz",
           "bytes": 3148,
-          "duration_ms": 661.1000001430511
+          "duration_ms": 657.7999999821186
         },
         {
           "name": "areas-36.json.gz",
           "bytes": 3215,
-          "duration_ms": 711.8999998569489
+          "duration_ms": 709.9000000059605
         },
         {
           "name": "areas-37.json.gz",
           "bytes": 3600,
-          "duration_ms": 721.3999998569489
+          "duration_ms": 724.8000000119209
         },
         {
           "name": "areas-38.json.gz",
           "bytes": 7160,
-          "duration_ms": 838.7000000476837
+          "duration_ms": 845.1999999880791
         },
         {
           "name": "areas-39.json.gz",
           "bytes": 9899,
-          "duration_ms": 965.9000000953674
+          "duration_ms": 950
         },
         {
           "name": "areas-40.json.gz",
           "bytes": 10079,
-          "duration_ms": 989.9000000953674
+          "duration_ms": 986.3000000119209
         },
         {
           "name": "areas-41.json.gz",
           "bytes": 8682,
-          "duration_ms": 1040.7000000476837
+          "duration_ms": 1031.4000000059605
         },
         {
           "name": "areas-42.json.gz",
           "bytes": 13350,
-          "duration_ms": 1125.2000000476837
+          "duration_ms": 1114.199999988079
         },
         {
           "name": "areas-43.json.gz",
           "bytes": 14571,
-          "duration_ms": 1205.7000000476837
+          "duration_ms": 1225.7999999821186
         },
         {
           "name": "areas-44.json.gz",
           "bytes": 10390,
-          "duration_ms": 1178.1999998092651
+          "duration_ms": 1174.699999988079
         },
         {
           "name": "areas-45.json.gz",
           "bytes": 11135,
-          "duration_ms": 1319.7999999523163
+          "duration_ms": 1316.7999999821186
         },
         {
           "name": "areas-46.json.gz",
           "bytes": 16363,
-          "duration_ms": 1453.7999999523163
+          "duration_ms": 1450.699999988079
         },
         {
           "name": "areas-47.json.gz",
           "bytes": 75016,
-          "duration_ms": 2150.4000000953674
+          "duration_ms": 2147.5
         },
         {
           "name": "areas-55.json.gz",
           "bytes": 23691,
-          "duration_ms": 1670.5
+          "duration_ms": 1667.199999988079
         },
         {
           "name": "areas-59.json.gz",
           "bytes": 114572,
-          "duration_ms": 2390.600000143051
+          "duration_ms": 2388.5
         }
       ],
       "passes_target": true,
-      "selection_ms": 112,
+      "selection_ms": 134,
       "selected_area": "12090312",
       "selected_income": "$50,800"
     }
   ],
-  "chunked_median_ms": 3405.100000143051,
+  "chunked_median_ms": 3406.2999999821186,
   "all_chunked_runs_pass": true
 }

@@ -1,5 +1,5 @@
 {
-  "candidate_sha256": "026b76bd9e3d15a3b7785591344bf38fe1ff02654639d4db78b4661d1aad3c33",
+  "candidate_sha256": "d857d24a7ddc6ce2d16e8efda62a5d1fc1be622c1ce709fe4ed2bf9b0861937e",
   "checks": [
     {
       "name": "physical_phone",
@@ -19,11 +19,11 @@
     }
   ],
   "manual_evidence_disposition": {
-    "type": "user_approved_compact_settings_and_table_navigation_update",
+    "type": "user_approved_analytics_update",
     "previously_tested_candidate_sha256": "2d53c218c6bd3e44e9bacf46533c6b638e19e6d634b6c744e8674ccb0bb4026b",
-    "change": "Closed-by-default toolbar Settings dropdown overlays the map and dismisses on focus departure or outside click; pagination scrolls to table top and focuses first result; focus and selection styles encompass the full row.",
-    "authorization": "Alex reviewed the implemented revisions and explicitly requested commit and deployment. Notify when publication is queued, without waiting for completion.",
+    "change": "Google Analytics tag and map/search interaction events; resident flows retain their behavior.",
+    "authorization": "On October 14, 2026, Alex approved deployment and stated: I have checked the work locally and it has passed. Prior physical phone and screen-reader evidence is carried forward under this approval.",
     "new_physical_checks_performed": false,
-    "automated_verification": "117 browser checks across Chromium, Firefox, and WebKit; seven release-gate tests; fresh candidate-bound mobile measurements."
+    "automated_verification": "Analytics commit 3b0c070 passed data/release tests and three-engine browser checks in GitHub run 38621023437. Fresh candidate-bound mobile measurements are required by the release gate."
   }
 }
