@@ -10,7 +10,9 @@ The macOS build platform matches the reviewed GDAL/PROJ output. Previous Linux b
 
 ## Current destination
 
-Worker: `income-stats-canada` in DevEdge master account. Production URL: `https://income-stats-canada.aj-mulford.workers.dev/`. On October 14, 2026, Alex confirmed that the Cloudflare-managed Git build integration was disconnected, the `CLOUDFLARE_API_TOKEN` secret was added, and GitHub's Worker name, site URL, account ID, and `cloudflare-workers` environment restricted to `main` match this configuration. Account setup is complete; verification and the first Cloudflare publication remain to be run.
+Worker: `income-stats-canada` in DevEdge master account. Production URL: `https://income-stats-canada.aj-mulford.workers.dev/`. On October 14, 2026, Alex confirmed that the Cloudflare-managed Git build integration was disconnected, the `CLOUDFLARE_API_TOKEN` secret was added, and GitHub's Worker name, site URL, account ID, and `cloudflare-workers` environment restricted to `main` match this configuration.
+
+The first Cloudflare deployment of commit `7bedc15980ced255970a1cd95aca081d4992f157` succeeded on October 14, 2026. Both verification and publication passed in [release run 38594666560](https://github.com/ajmulford/Income_stats_canada/actions/runs/38594666560), including the hosted HTML/assets/index/CSV checksum checks. Alex confirmed the site is available at the new URL and subsequently reported that tests on the new host look good. On October 14, 2026, Alex authorized decommissioning GitHub Pages; the repository Pages site was disabled successfully through the GitHub API (HTTP 204). Cloudflare Workers is now the production host. This confirmation does not claim a new automated hosted mobile performance report.
 
 ## Configure the existing Worker
 
