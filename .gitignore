@@ -12,3 +12,8 @@ public/data/
 playwright-report/
 test-results/
 reports/screenshots/
+
+# Cloudflare local state and credentials
+.wrangler/
+.dev.vars
+.dev.vars.*

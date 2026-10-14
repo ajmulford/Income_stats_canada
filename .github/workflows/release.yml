@@ -1,4 +1,4 @@
-name: Reviewed GitHub Pages release
+name: Reviewed Cloudflare Workers release
 on:
   workflow_dispatch:
     inputs:
@@ -9,23 +9,21 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: reviewed-pages-release
+  group: reviewed-cloudflare-release
   cancel-in-progress: false
 jobs:
   verify:
     uses: ./.github/workflows/verify.yml
   publish:
-    if: inputs.publish && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && !github.event.repository.private
+    if: inputs.publish && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     needs: verify
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read
-      pages: write
-      id-token: write
     environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      name: cloudflare-workers
+      url: ${{ vars.CLOUDFLARE_SITE_URL }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -41,14 +39,31 @@ jobs:
         run: |
           export RELEASE_DATE="$(TZ=America/Halifax date +%F)"
           npm run audit:release
-      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
-        with:
-          path: dist
-      - name: Deploy the reviewed artifact
-        id: deployment
-        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      - name: Validate Cloudflare deployment settings
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_WORKER_NAME: ${{ vars.CLOUDFLARE_WORKER_NAME }}
+          SITE_URL: ${{ vars.CLOUDFLARE_SITE_URL }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_WORKER_NAME"
+          node -e 'const u = new URL(process.env.SITE_URL); if (u.protocol !== "https:") throw new Error("CLOUDFLARE_SITE_URL must use HTTPS");'
+      - name: Install pinned deployment CLI
+        run: npm ci
+      - name: Deploy the reviewed artifact to Cloudflare Workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_WORKER_NAME: ${{ vars.CLOUDFLARE_WORKER_NAME }}
+          WRANGLER_SEND_METRICS: "false"
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_WORKER_NAME"
+          npx wrangler deploy --config wrangler.json --name="$CLOUDFLARE_WORKER_NAME"
       - name: Check the deployed release and original CSV
         env:
-          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+          SITE_URL: ${{ vars.CLOUDFLARE_SITE_URL }}
         run: node scripts/smoke-release.mjs

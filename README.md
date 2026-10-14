@@ -1,3 +1,5 @@
+> Hosting migration: Cloudflare Workers Static Assets deployment is being prepared. See [Cloudflare hosting setup](docs/cloudflare-hosting.md) for the new release workflow and required account configuration. Historical GitHub Pages release records below remain unchanged.
+
 # Canadian household income maps
 
 A public income map starting with Halifax Regional Municipality. Milestones one through three are complete: a validated dataset and resident workflows in a working local map. Milestone four release tooling and automated checks are prepared; publication still requires the documented manual launch checks and GitHub setup.
@@ -103,7 +105,7 @@ REPORT_PATH=reports/mobile-performance-milestone-four.json ENFORCE_TARGET=1 npm 
 npm run check:release
 ```
 
-`check:release` intentionally fails until physical-phone and actual screen-reader evidence is completed in [release/verification.json](release/verification.json). See the [manual launch and publication instructions](docs/release-checklist.md) and [milestone-four status](docs/milestone-four.md). The dispatch-only Pages workflow defaults to validation without publication; normal pushes and pull requests never publish. Only audited `dist/` is published, with the actual release date stamped after the checks pass.
+`check:release` intentionally fails until physical-phone and actual screen-reader evidence is completed in [release/verification.json](release/verification.json). See the [manual launch and publication instructions](docs/release-checklist.md) and [milestone-four status](docs/milestone-four.md). The dispatch-only Cloudflare Workers workflow defaults to validation without publication; normal pushes and pull requests never publish. Only audited `dist/` is published, with the actual release date stamped after the checks pass.
 
 The basemap is replaceable through [data/basemap.json](data/basemap.json), including an enable/disable switch. Income and search data remain independent of the street map. No account, database, paid API, or custom domain is required by this implementation.
 

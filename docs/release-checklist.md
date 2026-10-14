@@ -59,18 +59,18 @@ npm run check:release
 
 The measurement binds its evidence to the candidate fingerprint and source hash; all three chunked runs must meet five seconds. Keep browser tests and other heavy jobs stopped while measuring. The gate checks both the manual evidence and performance for this exact artifact. Commit the completed evidence with the final source; source-identical rebuilds have the same candidate fingerprint because build-commit metadata is excluded from it.
 
-## GitHub setup and release
+## Cloudflare setup and release
 
-The intended host is a **public** GitHub repository, using standard macOS/ARM verification runners, Ubuntu deployment runners, and GitHub Pages. The configured remote is the public repository `ajmulford/Income_stats_canada`. Do not infer the publishing account from whichever CLI account happens to be active.
+Cloudflare Workers Static Assets is the hosting destination; GitHub retains the source repository and verification workflow. See [Cloudflare hosting setup](cloudflare-hosting.md) for the account, project, token, and production URL configuration. This migration keeps the reviewed-data build on the existing macOS runner and uploads the verified artifact directly to Cloudflare.
 
-1. Push the reviewed source and evidence to the selected public repository.
-2. Pages is configured with **GitHub Actions** as the source, and the `github-pages` environment is restricted to `main`. Keep that default-branch restriction in place.
-3. Run **Reviewed GitHub Pages release** with `publish` left false. It rebuilds the pinned inputs, tests three engines, and retains an exact candidate for one day without publishing.
-4. Compare that candidate with the locally tested fingerprint. A mismatch blocks publication and needs investigation/reverification. A changed live official source also fails closed; restore the exact reviewed snapshot or review a new source lock. Exact reviewed ancillary responses are bundled in `data/source-snapshots/`; the large census archives still download against their locked hashes. Source caches are an optimization, not durable archival storage.
-5. After required checks pass, run the same workflow with `publish` true on the default branch. Publication requires a public repository and exact candidate evidence. It stamps the actual America/Halifax release date, publishes `dist/` only, then checks hosted HTML/assets/index/CSV against the deployed manifest.
-6. Open the real project URL, repeat a resident selection and download, and rerun the mobile measurement with `PREVIEW_URL=https://OWNER.github.io/REPOSITORY` and a separate `REPORT_PATH=reports/mobile-performance-hosted.json`. Record response compression and the live result; local preview performance does not certify the host.
+1. Configure the selected Worker and the documented GitHub secrets/variables. Restrict the `cloudflare-workers` deployment environment to `main`.
+2. Push reviewed source and evidence to `ajmulford/Income_stats_canada`.
+3. Dispatch **Reviewed Cloudflare Workers release** with `publish=false` for verification only, or `publish=true` for authorized publication. Its verification job rebuilds the pinned inputs and tests all three browser engines. Publication checks the exact candidate evidence before stamping the actual America/Halifax release date and uploading `dist/`.
+4. The workflow checks hosted HTML/assets/index/CSV against the published manifest. Open the Worker URL and repeat resident selection and download. For local uploads, run `scripts/smoke-release.mjs` with `SITE_URL` set to the deployment URL.
+5. Rerun hosted mobile measurements with `PREVIEW_URL=https://WORKER.ACCOUNT-SUBDOMAIN.workers.dev` (or the verified custom domain) and a separate `REPORT_PATH=reports/mobile-performance-hosted.json`. Record hosted compression and results; local measurements do not certify the new host.
+6. Configure any requested custom domain after the initial Cloudflare deployment is verified. Retire the former GitHub Pages site only after confirming the Cloudflare destination and routing work.
 
-If the hosted check or measurement fails, treat the launch as unverified and correct it before announcing the release. Do not silently mark it passed. Record the deployed URL, commit, release date, and hosted verification in the milestone-four report.
+A candidate mismatch or changed official source fails closed and requires investigation. The exact reviewed ancillary inputs remain in `data/source-snapshots/`; source caches are an optimization rather than durable archives. If hosted verification fails, correct it before announcing migration completion. Historical GitHub Pages releases remain recorded in milestone four.
 
 ## Updates and rollback
 
