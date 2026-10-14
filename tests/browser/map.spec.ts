@@ -778,3 +778,32 @@ for (const width of [390, 1280]) {
     }
   });
 }
+
+test("analytics records search-to-selection without sending raw search text", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as any).__analyticsEvents = [];
+    (window as any).gtag = (...args: unknown[]) => (window as any).__analyticsEvents.push(args);
+  });
+  await ready(page);
+  await expect(page.locator('script[src*="googletagmanager.com"]')).toHaveCount(0);
+  await page.locator("#place-search").fill("12090312");
+  await page.locator('button[data-area-id="12090312"]').click();
+  const events = await page.evaluate(() => (window as any).__analyticsEvents);
+  const searchIndex = events.findIndex((event: any[]) => event[1] === "area_search");
+  const selectionIndex = events.findIndex((event: any[]) => event[1] === "area_select");
+  expect(searchIndex).toBeGreaterThanOrEqual(0);
+  expect(selectionIndex).toBeGreaterThan(searchIndex);
+  expect(events[searchIndex][2]).toMatchObject({ search_kind: "area_number", result_count: 1 });
+  expect(events[searchIndex][2]).not.toHaveProperty("search_term");
+  expect(events[selectionIndex][2]).toMatchObject({ area_id: "12090312", selection_source: "search_results" });
+});
+
+test("resident selection works if analytics throws", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as any).gtag = () => { throw new Error("Analytics unavailable"); };
+  });
+  await ready(page);
+  await page.locator("#place-search").fill("12090312");
+  await page.locator('button[data-area-id="12090312"]').click();
+  await expect(page.locator("#selection-panel")).toContainText("$50,800");
+});

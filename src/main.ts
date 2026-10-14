@@ -1,3 +1,4 @@
+import { initialiseAnalytics, trackEvent } from "./analytics";
 import { normalizePlaceName } from "./place-search";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -18,6 +19,8 @@ import type {
   Chunk,
   Index,
 } from "./data";
+
+initialiseAnalytics();
 
 const element = <T extends HTMLElement>(id: string) => {
   const result = document.getElementById(id);
@@ -144,6 +147,7 @@ overlayToggle.addEventListener("change", () => {
   }
   else incomeOverlay.remove();
   opacityControl.disabled = !overlayToggle.checked;
+  trackEvent("map_overlay_change", { visible: overlayToggle.checked });
 });
 opacityControl.addEventListener("input", () => {
   incomeOpacity = Number(opacityControl.value) / 100;
@@ -151,6 +155,7 @@ opacityControl.addEventListener("input", () => {
   opacityControl.setAttribute("aria-valuetext", `${opacityControl.value} percent`);
   for (const [id, layer] of layers) layer.setStyle(style(id));
 });
+opacityControl.addEventListener("change", () => trackEvent("map_opacity_change", { opacity_percent: Number(opacityControl.value) }));
 function leafletBounds(b: Bounds) {
   return L.latLngBounds([b[1], b[0]], [b[3], b[2]]);
 }
@@ -387,6 +392,8 @@ function revealSelectedView() {
 async function selectArea(id: string, navigate: boolean, revealMap = false) {
   const row = rows.get(id);
   if (!row) return;
+  flushSearchAnalytics();
+  trackEvent("area_select", { area_id: id, selection_source: navigate ? (placeSearch.value.trim() ? "search_results" : "area_list") : "map", income_available: row.income !== null });
   const before = selected;
   selected = id;
   if (before) layers.get(before)?.setStyle(style(before));
@@ -492,6 +499,7 @@ function renderList() {
 }
 function changeListPage(direction: number) {
   currentPage += direction;
+  trackEvent("list_page_change", { page_number: currentPage + 1, direction: direction > 0 ? "next" : "previous" });
   renderList();
   list.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
   list.closest("table")!.scrollIntoView({ block: "start", behavior: "instant" });
@@ -522,6 +530,17 @@ function renderLegend(bands: Band[]) {
     })(),
   );
 }
+let searchAnalyticsTimer: ReturnType<typeof setTimeout> | undefined;
+function flushSearchAnalytics() {
+  if (searchAnalyticsTimer === undefined) return;
+  clearTimeout(searchAnalyticsTimer);
+  searchAnalyticsTimer = undefined;
+  const text = placeSearch.value.trim();
+  trackEvent(text ? "area_search" : "search_clear", {
+    search_kind: /^\d+$/.test(text) ? "area_number" : "place_name",
+    result_count: listRows.length,
+  });
+}
 function filterAreas() {
   const text = placeSearch.value.trim();
   const normalized = normalizePlaceName(text);
@@ -529,6 +548,8 @@ function filterAreas() {
     normalizePlaceName(areaPlaceLabel(row.id)).includes(normalized));
   currentPage = 0;
   renderList();
+  clearTimeout(searchAnalyticsTimer);
+  searchAnalyticsTimer = setTimeout(flushSearchAnalytics, 700);
 }
 async function initialise() {
   try {
@@ -554,6 +575,7 @@ async function initialise() {
         const column = button.dataset.sort!;
         sortDescending = sortColumn === column ? !sortDescending : column === "income";
         sortColumn = column;
+        trackEvent("list_sort", { sort_column: column, sort_direction: sortDescending ? "descending" : "ascending" });
         for (const control of sortButtons) {
           const active = control === button;
           if (active) control.parentElement!.setAttribute("aria-sort", sortDescending ? "descending" : "ascending");
@@ -569,18 +591,24 @@ async function initialise() {
     download.href = dataURL("income.csv");
     download.download = "hrm-income-2020.csv";
     download.removeAttribute("aria-disabled");
+    download.addEventListener("click", () => trackEvent("csv_download", { file_name: "hrm-income-2020.csv" }));
+    placeSearch.addEventListener("blur", flushSearchAnalytics);
     placeSearch.addEventListener("input", filterAreas);
     previous.addEventListener("click", () => changeListPage(-1));
     next.addEventListener("click", () => changeListPage(1));
-    element("full-view").addEventListener("click", () =>
+    element("full-view").addEventListener("click", () => {
+      trackEvent("map_view_change", { view_name: "municipality" });
       map.fitBounds(leafletBounds(index.overviewBounds), {
         padding: [16, 16],
         animate: false,
-      }),
-    );
-    element("urban-view").addEventListener("click", () =>
-      map.setView([44.664, -63.589], 13, { animate: false }),
-    );
+      });
+    });
+    element("urban-view").addEventListener("click", () => {
+      trackEvent("map_view_change", { view_name: "urban" });
+      map.setView([44.664, -63.589], 13, { animate: false });
+    });
+    map.on("dragend", () => trackEvent("map_pan", { zoom_level: map.getZoom() }));
+    map.on("zoomend", () => trackEvent("map_zoom", { zoom_level: map.getZoom() }));
     map.on("moveend", () => {
       void loadVisible();
     });
@@ -590,6 +618,7 @@ async function initialise() {
     });
     performance.mark("income-index-ready");
     await loadVisible(true);
+    trackEvent("map_ready");
   } catch (error) {
     console.error(error);
     document.body.dataset.mapState = "error";
