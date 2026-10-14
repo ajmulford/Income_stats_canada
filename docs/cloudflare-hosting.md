@@ -10,9 +10,11 @@ The macOS build platform matches the reviewed GDAL/PROJ output. Previous Linux b
 
 ## Current destination
 
-Worker: `income-stats-canada` in DevEdge master account. Production URL: `https://income-stats-canada.aj-mulford.workers.dev/`. On October 14, 2026, Alex confirmed that the Cloudflare-managed Git build integration was disconnected, the `CLOUDFLARE_API_TOKEN` secret was added, and GitHub's Worker name, site URL, account ID, and `cloudflare-workers` environment restricted to `main` match this configuration.
+Worker: `income-stats-canada` in DevEdge master account. Production URL: `https://income-stats.devedge.biz/`. The original `https://income-stats-canada.aj-mulford.workers.dev/` address also serves the Worker. On October 14, 2026, Alex confirmed that the Cloudflare-managed Git build integration was disconnected, the `CLOUDFLARE_API_TOKEN` secret was added, and GitHub's Worker name, site URL, account ID, and `cloudflare-workers` environment restricted to `main` match this configuration.
 
 The first Cloudflare deployment of commit `7bedc15980ced255970a1cd95aca081d4992f157` succeeded on October 14, 2026. Both verification and publication passed in [release run 38594666560](https://github.com/ajmulford/Income_stats_canada/actions/runs/38594666560), including the hosted HTML/assets/index/CSV checksum checks. Alex confirmed the site is available at the new URL and subsequently reported that tests on the new host look good. On October 14, 2026, Alex authorized decommissioning GitHub Pages; the repository Pages site was disabled successfully through the GitHub API (HTTP 204). Cloudflare Workers is now the production host. This confirmation does not claim a new automated hosted mobile performance report.
+
+On October 14, 2026, Alex added `income-stats.devedge.biz` through the Worker’s dashboard Custom Domains settings and confirmed the site loads. HTTPS checks verified that HTML, frontend assets, the data index, and the CSV match the published release manifest and that the custom domain serves the same release as the workers.dev address. GitHub’s `CLOUDFLARE_SITE_URL` variable now points to `https://income-stats.devedge.biz/` for future deployment checks. Custom-domain DNS and certificate configuration is managed in the Cloudflare dashboard; `wrangler.json` manages static asset deployment.
 
 ## Configure the existing Worker
 
@@ -20,7 +22,7 @@ The first Cloudflare deployment of commit `7bedc15980ced255970a1cd95aca081d4992f
 2. Record the actual Worker name. `wrangler.json` defaults to `income-stats-canada`; the workflow overrides this using `CLOUDFLARE_WORKER_NAME` so it targets the chosen existing Worker.
 3. Create a Cloudflare API token scoped to the selected account with Account / Workers Scripts / Edit and Account / Account Settings / Read, following Cloudflare's GitHub Actions guide. No DNS edit permission is needed for a workers.dev deployment.
 4. Add GitHub repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-5. Add repository variables `CLOUDFLARE_WORKER_NAME` and `CLOUDFLARE_SITE_URL` (the actual HTTPS production URL, such as `https://WORKER.ACCOUNT-SUBDOMAIN.workers.dev/`).
+5. Add repository variables `CLOUDFLARE_WORKER_NAME` and `CLOUDFLARE_SITE_URL` (`https://income-stats.devedge.biz/` for this deployment).
 6. Configure the `cloudflare-workers` GitHub environment to allow deployment from `main` only.
 
 Never put API tokens in repository files or chat. Wrangler OAuth login is sufficient for local uploads, but GitHub Actions requires its own API-token secret.
@@ -46,9 +48,9 @@ For an authorized local release with complete candidate evidence:
 npm run check:release
 RELEASE_DATE=YYYY-MM-DD npm run audit:release
 npx wrangler deploy --config wrangler.json --name=ACTUAL_WORKER
-SITE_URL=https://ACTUAL_WORKER.ACCOUNT-SUBDOMAIN.workers.dev/ node scripts/smoke-release.mjs
+SITE_URL=https://income-stats.devedge.biz/ node scripts/smoke-release.mjs
 ```
 
-Use the actual Halifax publication date. Fresh hosted performance evidence uses `PREVIEW_URL` and `REPORT_PATH=reports/mobile-performance-hosted.json`. Keep the former GitHub Pages site until the Cloudflare destination is verified. Custom-domain routing is a separate configuration step after the initial upload.
+Use the actual Halifax publication date. Fresh hosted performance evidence uses `PREVIEW_URL` and `REPORT_PATH=reports/mobile-performance-hosted.json`. GitHub Pages has been retired following successful Cloudflare deployment and user checks. The custom domain is active.
 
 References: [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/get-started/) and [Cloudflare GitHub Actions deployment](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/).
